@@ -1,47 +1,52 @@
-import { User } from '../models/authModel';
-import { AuthResponse } from '../types/authTypes';
+import { UserType } from "@/domains/user/types";
+import { User } from "@/domains/user/types";
+import {
+  UserService,
+  createUserService,
+} from "../../user/services/userService";
+import jwt from "jsonwebtoken";
+
+// JWT token payload
+const JWT_SECRET = process.env.JWT_SECRET || "secret";
+
+interface JwtPayload {
+  username: string;
+  userType: UserType;
+}
+
+
 
 /**
  * Authentication service for handling user login, registration, and session management
  */
 export class AuthService {
+  constructor(private userService: UserService) {
+    this.userService = userService;
+  }
   /**
    * Log in a user with their credentials
-   * @param email User's email
+   * @param username User's username
    * @param password User's password
-   * @returns Promise with auth response containing user and token
+   * @returns JWT token, containing username, and userType
    */
-  async login(email: string, password: string): Promise<AuthResponse> {
-    // Implement login logic
-    throw new Error('Not implemented');
-  }
-
-  /**
-   * Register a new user
-   * @param userData User registration data
-   * @returns Promise with auth response containing user and token
-   */
-  async register(userData: Partial<User>): Promise<AuthResponse> {
-    // Implement registration logic
-    throw new Error('Not implemented');
-  }
-
-  /**
-   * Log out current user
-   */
-  async logout(): Promise<void> {
-    // Implement logout logic
-    throw new Error('Not implemented');
-  }
-
-  /**
-   * Verify if current token is valid
-   * @returns Promise with boolean indicating if token is valid
-   */
-  async verifyToken(): Promise<boolean> {
-    // Implement token verification
-    throw new Error('Not implemented');
+  async login(username: string, password: string): Promise<string> {
+    const user = await this.userService.getUserByUsername(username);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    if (user.password !== password) {
+      // @TODO: hash password
+      throw new Error("Invalid password");
+    }
+    
+    // Generate JWT token
+    const payload = {
+      username: user.username,
+      userType: user.userType,
+    };
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "24h" });
+    return token;
   }
 }
 
-export default new AuthService();
+export default new AuthService(createUserService());

@@ -1,73 +1,32 @@
-import { User, UserProfile } from '../models/userModel';
-import { UserResponse, ProfileResponse } from '../types/userTypes';
+import { Player, User, Coach, Arbiter } from '@/domains/user/types'
+import { UserModel, createUserModel } from '../models/userModel'
 
 /**
  * Service for managing user accounts and profiles
  */
 export class UserService {
-  /**
-   * Get user by ID
-   * @param id User ID
-   * @returns Promise with user data
-   */
-  async getUserById(id: string): Promise<User> {
-    // Implement get user by ID logic
-    throw new Error('Not implemented');
+
+  constructor(private userModel: UserModel) {
+    this.userModel = userModel || createUserModel();
   }
 
-  /**
-   * Get users by criteria
-   * @param criteria Search criteria
-   * @returns Promise with array of users
-   */
-  async getUsersByCriteria(criteria: Record<string, any>): Promise<User[]> {
-    // Implement get users by criteria logic
-    throw new Error('Not implemented');
+  async getUserByUsername(username: string): Promise<User | null> {
+    return this.userModel.getUserByUsername(username);
   }
 
-  /**
-   * Update user
-   * @param id User ID
-   * @param data Updated user data
-   * @returns Promise with updated user data
-   */
-  async updateUser(id: string, data: Partial<User>): Promise<User> {
-    // Implement update user logic
-    throw new Error('Not implemented');
+  async getPlayerByUsername(username: string): Promise<Player | null> {
+    return this.userModel.getPlayerByUsername(username);
   }
 
-  /**
-   * Get user profile
-   * @param userId User ID
-   * @returns Promise with user profile
-   */
-  async getUserProfile(userId: string): Promise<UserProfile> {
-    // Implement get user profile logic
-    throw new Error('Not implemented');
+  async getCoachByUsername(username: string): Promise<Coach | null> {
+    return this.userModel.getCoachByUsername(username);
   }
 
-  /**
-   * Update user profile
-   * @param userId User ID
-   * @param data Updated profile data
-   * @returns Promise with updated profile data
-   */
-  async updateUserProfile(userId: string, data: Partial<UserProfile>): Promise<UserProfile> {
-    // Implement update user profile logic
-    throw new Error('Not implemented');
-  }
-
-  /**
-   * Change user password
-   * @param userId User ID
-   * @param currentPassword Current password
-   * @param newPassword New password
-   * @returns Promise with success status
-   */
-  async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<boolean> {
-    // Implement change password logic
-    throw new Error('Not implemented');
+  async getArbiterByUsername(username: string): Promise<Arbiter | null> {
+    return this.userModel.getArbiterByUsername(username);
   }
 }
 
-export default new UserService();
+export function createUserService(): UserService {
+  return new UserService(createUserModel());
+}

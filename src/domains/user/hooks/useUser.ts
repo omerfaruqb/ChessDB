@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import userService from '../services/userService';
 import { User, UserProfile, Achievement } from '../models/userModel';
-import { UpdateUserRequest, UpdateProfileRequest, ChangePasswordRequest } from '../types/userTypes';
+import { UpdateUserRequest, UpdateProfileRequest, ChangePasswordRequest } from '../types/dbTypes';
 
 /**
  * Custom hook for managing user data and profiles
