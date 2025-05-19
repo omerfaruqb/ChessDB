@@ -2,6 +2,7 @@ export enum UserType {
   PLAYER = "PLAYER",
   COACH = "COACH",
   ARBITER = "ARBITER",
+  MANAGER = "MANAGER",
 }
 
 export interface User {
@@ -28,4 +29,10 @@ export interface Coach extends User {
 export interface Arbiter extends User {
   userType: UserType.ARBITER;
   experienceLevel: string;
+}
+
+export interface Manager {
+  username: string;
+  password: string;
+  userType: UserType.MANAGER;
 }
