@@ -1,4 +1,4 @@
-export type Hall = {
+export interface Hall {
     hall_id: number;
     hall_name: string;
     country: string;

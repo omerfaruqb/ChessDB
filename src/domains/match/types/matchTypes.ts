@@ -1,5 +1,5 @@
 
-export type Match = {
+export interface Match {
 
   match_id: number;
 

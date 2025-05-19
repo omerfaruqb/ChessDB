@@ -1,4 +1,4 @@
-export type MatchRow = {
+export interface MatchAssignment {
     match_id: number;
 
     white_player: string;

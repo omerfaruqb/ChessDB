@@ -1,4 +1,4 @@
-export type CoachCertification = {
+export interface CoachCertification {
     username: string;
     certification: string;
   };
