@@ -1,4 +1,4 @@
-import { Match, MatchResult } from '../types/matchTypes';
+import { Match, MatchResult } from '../types';
 /**
  * Service for managing chess matches
  */

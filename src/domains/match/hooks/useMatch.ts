@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import matchService from '../services/matchService';
 import { Match, MatchResult } from '../models/matchModel';
-import { CreateMatchRequest, UpdateMatchRequest, SubmitResultRequest } from '../types/matchTypes';
+import { CreateMatchRequest, UpdateMatchRequest, SubmitResultRequest } from '../types';
 
 /**
  * Custom hook for managing chess matches
