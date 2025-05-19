@@ -6,13 +6,20 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:db": "tsx src/test-db.ts",
+    "test:db:watch": "tsx watch src/test-db.ts"
   },
   "dependencies": {
+    "@types/sqlite3": "^3.1.11",
+    "dotenv": "^16.5.0",
     "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.1",
     "next": "15.3.2",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -24,6 +31,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "tailwindcss": "^4",
+    "tsx": "^4.19.4",
     "typescript": "^5"
   }
 }
