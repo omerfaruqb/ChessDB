@@ -1,5 +1,5 @@
-import { TeamModel } from "../models/teamModel";
-import { Team, PlayerTeam } from "../types/teamTypes";
+import { TeamModel } from "./model";
+import { Team, PlayerTeam } from "./types";
 
 export class TeamService {
     constructor(private teamModel: TeamModel) {

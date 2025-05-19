@@ -1,5 +1,5 @@
-import { SponsorModel } from "../models/sponsorModel";
-import { Sponsor } from "../types/sponsorTypes";
+import { SponsorModel } from "./model";
+import { Sponsor } from "./types";
 
 
 export class SponsorService {

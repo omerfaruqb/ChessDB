@@ -1,4 +1,4 @@
-import { Match, MatchResult } from "../types/index";
+import { Match, MatchResult } from "./types";
 
 const mockMatch: Match = {
     match_id: 1,

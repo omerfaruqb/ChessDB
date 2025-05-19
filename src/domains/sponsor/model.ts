@@ -1,4 +1,4 @@
-import { Sponsor } from "../types/sponsorTypes";
+import { Sponsor } from "./types";
 
 const mockSponsor: Sponsor = {
     sponsor_id: 1,

@@ -1,5 +1,5 @@
-import { Team } from "../types/teamTypes";
-import { PlayerTeam } from "../types/teamTypes";
+import { Team } from "./types";
+import { PlayerTeam } from "./types";
 
 const mockTeam: Team = {
     team_id: 1,
