@@ -1,54 +1,18 @@
-/**
- * Sponsor model
- */
-export interface Sponsor {
-  id: string;
-  name: string;
-  logoUrl: string;
-  website?: string;
-  description?: string;
-  contactName?: string;
-  contactEmail?: string;
-  contactPhone?: string;
-  tier?: SponsorTier;
-  createdAt: Date;
-  updatedAt: Date;
+import { Sponsor } from "../types/sponsorTypes";
+
+const mockSponsor: Sponsor = {
+    sponsor_id: 1,
+    sponsor_name: "Sponsor 1"
 }
 
-/**
- * Sponsorship model
- */
-export interface Sponsorship {
-  id: string;
-  sponsorId: string;
-  entityId: string;
-  entityType: EntityType;
-  startDate: Date;
-  endDate?: Date;
-  amount?: number;
-  currency?: string;
-  terms?: string;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-/**
- * Sponsor tier enum
- */
-export enum SponsorTier {
-  PLATINUM = 'platinum',
-  GOLD = 'gold',
-  SILVER = 'silver',
-  BRONZE = 'bronze',
-  SUPPORTING = 'supporting'
-}
-
-/**
- * Entity type enum
- */
-export enum EntityType {
-  TOURNAMENT = 'tournament',
-  TEAM = 'team',
-  PLAYER = 'player'
+export class SponsorModel {
+    async getSponsorById(id: number): Promise<Sponsor> {
+        return mockSponsor;
+    }
+    async getAllSponsors(): Promise<Sponsor[]> {
+        return [mockSponsor];
+    }
+    async createSponsor(sponsor: Sponsor): Promise<Sponsor> {
+        return mockSponsor;
+    }
 }
