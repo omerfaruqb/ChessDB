@@ -12,6 +12,12 @@ export interface Match {
 
   team1_id: number;
   team2_id: number;
+
+  white_player_id: number;
+  black_player_id: number;
+  match_result: MatchResult;
   arbiter_username: string;
   rating: number | null;
 };
+
+export type MatchResult = 'white_wins' | 'black_wins' | 'draw';
