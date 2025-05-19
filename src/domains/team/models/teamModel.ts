@@ -1,55 +1,39 @@
-/**
- * Team model
- */
-export interface Team {
-  id: string;
-  name: string;
-  logoUrl?: string;
-  country?: string;
-  city?: string;
-  description?: string;
-  captain?: string; // User ID of team captain
-  founded?: Date;
-  website?: string;
-  socialMedia?: SocialMediaLinks;
-  createdAt: Date;
-  updatedAt: Date;
+import { Team } from "../types/teamTypes";
+import { PlayerTeam } from "../types/teamTypes";
+
+const mockTeam: Team = {
+    team_id: 1,
+    team_name: "Team 1",
+    sponsor_id: 1,
 }
 
-/**
- * Team member model
- */
-export interface TeamMember {
-  id: string;
-  teamId: string;
-  playerId: string;
-  role: TeamRole;
-  boardPosition?: number; // Position in team lineup (1 = first board, etc.)
-  joinDate: Date;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+const mockPlayerTeam: PlayerTeam = {
+    player_id: 1,
+    team_id: 1,
+}
+const mockPlayerTeam2: PlayerTeam = {
+    player_id: 2,
+    team_id: 1,
 }
 
-/**
- * Team roles enum
- */
-export enum TeamRole {
-  CAPTAIN = 'captain',
-  COACH = 'coach',
-  PLAYER = 'player',
-  RESERVE = 'reserve',
-  MANAGER = 'manager'
+export class TeamModel {
+    async getTeamById(id: number): Promise<Team> {
+        return mockTeam;
+    }
+    async getTeamByName(name: string): Promise<Team> {
+        return mockTeam;
+    }
+    async createTeam(team: Team): Promise<Team> {
+        return mockTeam;
+    }
+    async getPlayersOfTeam(teamId: number): Promise<PlayerTeam[]> {
+        return [mockPlayerTeam, mockPlayerTeam2];
+    }
+    async addPlayerToTeam(playerId: number, teamId: number): Promise<PlayerTeam> {
+        return mockPlayerTeam;
+    }
+    async removePlayerFromTeam(playerId: number, teamId: number): Promise<PlayerTeam> {
+        return mockPlayerTeam;
+    }
 }
 
-/**
- * Social media links interface
- */
-export interface SocialMediaLinks {
-  twitter?: string;
-  facebook?: string;
-  instagram?: string;
-  youtube?: string;
-  twitch?: string;
-  discord?: string;
-}
