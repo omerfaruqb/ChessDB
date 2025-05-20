@@ -10,8 +10,8 @@ async function createSchema() {
         const fs = require('fs');
         const path = require('path');
         
-        // Read the SQL file
-        const sqlFilePath = path.join(__dirname, '../..', 'db_init.sql');
+        // Read the SQL file from the project root
+        const sqlFilePath = path.join(process.cwd(), 'db_init.sql');
         const sqlContent = fs.readFileSync(sqlFilePath, 'utf8');
         
         // Split the SQL file into individual statements
