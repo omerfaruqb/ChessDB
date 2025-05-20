@@ -7,7 +7,9 @@ const PUBLIC_PATHS = [
   '/login',
   '/register',
   '/api/auth/login',
+  '/api/auth/status',
   '/api/auth/register',
+  '/api/auth/logout',
   // @TODO: Add more public paths
 ];
 

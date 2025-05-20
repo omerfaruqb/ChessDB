@@ -16,13 +16,16 @@ export default function LoginPage() {
   
   // Redirect if already logged in
   useEffect(() => {
+    console.log('Login page effect - User:', user, 'Loading:', loading);
     if (!loading && user) {
+      console.log('User already logged in, redirecting to dashboard');
       router.push('/dashboard');
     }
   }, [user, loading, router]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Login form submitted with username:', username);
     
     if (!username || !password) {
       setError('Please enter both username and password');
@@ -33,16 +36,19 @@ export default function LoginPage() {
       setIsLoggingIn(true);
       setError('');
       
+      console.log('Attempting login...');
       const success = await login(username, password);
       
       if (success) {
+        console.log('Login succeeded, redirecting to dashboard');
         router.push('/dashboard');
       } else {
+        console.log('Login failed:', authError);
         setError(authError || 'Invalid username or password');
       }
     } catch (err) {
+      console.error('Error during login submission:', err);
       setError('An error occurred during login');
-      console.error(err);
     } finally {
       setIsLoggingIn(false);
     }

@@ -15,11 +15,24 @@ export class UserModel {
   }
 
   async getUserByUsername(username: string): Promise<User | null> {
-    const rows = await this.query<User>(
-      `SELECT * FROM users WHERE username = ?`,
+    const rows = await this.query(
+      `SELECT username, password, name, surname, nationality, user_type as userType FROM users WHERE username = ?`,
       [username]
     );
-    return rows[0] ?? null;
+    
+    if (rows.length === 0) {
+      return null;
+    }
+    
+    // Map user_type to userType enum
+    const user = rows[0] as any;
+    
+    // Convert database enum string to UserType enum
+    if (user.userType) {
+      user.userType = user.userType as UserType;
+    }
+    
+    return user as User;
   }
 
   async getPlayerByUsername(username: string): Promise<Player | null> {

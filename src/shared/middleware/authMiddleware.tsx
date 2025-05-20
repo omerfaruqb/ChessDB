@@ -15,11 +15,16 @@ export function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
   const router = useRouter();
 
   useEffect(() => {
+    // Add debug logging
+    console.log('AuthGuard running with user:', user, 'loading:', loading);
+    
     if (!loading && !user) {
+      console.log('Not authenticated, redirecting to login');
       router.push('/login');
     }
 
     if (!loading && user && allowedRoles && !allowedRoles.includes(user.userType)) {
+      console.log('User not authorized for this role, redirecting to unauthorized');
       router.push('/unauthorized');
     }
   }, [loading, user, router, allowedRoles]);
@@ -36,12 +41,15 @@ export function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
   }
 
   if (!user) {
+    console.log('AuthGuard rendering null due to no user');
     return null;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.userType)) {
+    console.log('AuthGuard rendering null due to unauthorized role');
     return null;
   }
 
+  console.log('AuthGuard rendering children - user is authenticated');
   return <>{children}</>;
 } 

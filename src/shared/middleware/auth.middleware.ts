@@ -11,27 +11,58 @@
   }
 
   export function verifyAuth(request: NextRequest) {
+    // First try to get token from authorization header
     const token = request.headers.get('authorization')?.replace('Bearer ', '');
     
-    if (!token) {
+    // Check if we have a auth_session cookie as an alternative
+    const sessionCookie = request.cookies.get('auth_session');
+    
+    console.log('Middleware checking auth - Token:', !!token, 'Cookie:', !!sessionCookie);
+    
+    // No auth methods available
+    if (!token && !sessionCookie) {
       return {
         isAuthenticated: false,
-        error: 'No token provided'
+        error: 'No authentication provided'
       };
     }
 
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
-      return {
-        isAuthenticated: true,
-        user: decoded
-      };
-    } catch (error) {
-      return {
-        isAuthenticated: false,
-        error: 'Invalid token'
-      };
+    // Try JWT token first if available
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+        return {
+          isAuthenticated: true,
+          user: decoded
+        };
+      } catch (error) {
+        // If token verification fails, fall through to check cookie
+        console.log('JWT verification failed, checking cookie instead');
+      }
     }
+    
+    // If no valid token, try cookie
+    if (sessionCookie) {
+      try {
+        const sessionData = JSON.parse(sessionCookie.value);
+        
+        // Validate the session data has required fields
+        if (sessionData && sessionData.username && sessionData.userType) {
+          return {
+            isAuthenticated: true,
+            user: sessionData
+          };
+        }
+      } catch (error) {
+        console.error('Session cookie parsing error:', error);
+      }
+    }
+    
+    // All authentication methods failed
+    return {
+      isAuthenticated: false,
+      error: 'Invalid authentication'
+    };
   }
 
   export function requireAuth(handler: Function) {

@@ -52,7 +52,7 @@ async function initializeDatabase() {
         console.log('Successfully connected to MySQL database');
         conn.release();
         // Create schema if needed
-        await createSchema();
+        //await createSchema();
         return pool;
     } catch (error) {
         console.error('Failed to initialize database:', error);

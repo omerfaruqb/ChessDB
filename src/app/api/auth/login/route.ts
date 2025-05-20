@@ -18,24 +18,41 @@ export async function POST(request: NextRequest) {
     try {
       const userData = await authService.login(username, password);
       
-      // Set session cookie
-      const cookieStore = await cookies();
-      cookieStore.set({
-        name: 'auth_session',
-        value: JSON.stringify({
-          username: userData.username,
-          userType: userData.userType,
-        }),
-        httpOnly: true,
-        path: '/',
-        maxAge: 60 * 60 * 24, // 24 hours
-        sameSite: 'strict',
+      // Make sure userType is included in the session data
+      if (!userData.userType) {
+        console.error('User data missing userType:', userData);
+        return NextResponse.json(
+          { success: false, message: 'User type information is missing' },
+          { status: 500 }
+        );
+      }
+      
+      // Create a serialized session value
+      const sessionValue = JSON.stringify({
+        username: userData.username,
+        userType: userData.userType,
       });
-
-      return NextResponse.json({
+      
+      console.log('Setting auth_session cookie with value:', sessionValue);
+      
+      // Use NextResponse to set cookie directly
+      const response = NextResponse.json({
         success: true,
         user: userData,
       });
+      
+      // Set the cookie on the response
+      response.cookies.set({
+        name: 'auth_session',
+        value: sessionValue,
+        httpOnly: true,
+        path: '/',
+        maxAge: 60 * 60 * 24, // 24 hours
+        secure: process.env.NODE_ENV === 'production', // Only secure in production
+        sameSite: 'lax', // Use 'lax' for development
+      });
+      
+      return response;
     } catch (err: any) {
       return NextResponse.json(
         { success: false, message: err.message || 'Invalid username or password' },
