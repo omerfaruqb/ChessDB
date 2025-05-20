@@ -2,103 +2,106 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/domains/auth/hooks/useAuth';
-import { UserType } from '@/domains/user/types';
-import { AuthGuard } from '@/shared/middleware/authMiddleware';
 import { Hall } from '@/domains/hall/types';
+import Link from 'next/link';
 
 export default function HallsPage() {
+  const { user } = useAuth();
+  
   const [halls, setHalls] = useState<Hall[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  
+  // Fetch halls data
   useEffect(() => {
-    async function fetchHalls() {
+    const fetchHalls = async () => {
       try {
-        const response = await fetch('/api/halls');
-        if (!response.ok) {
-          throw new Error('Failed to fetch halls');
+        setLoading(true);
+        const res = await fetch('/api/halls');
+        const data = await res.json();
+        
+        if (data.success) {
+          setHalls(data.halls);
+        } else {
+          setError('Failed to load halls data');
         }
-        const data = await response.json();
-        setHalls(data);
       } catch (err) {
-        setError('Error loading halls. Please try again later.');
+        setError('An error occurred while fetching halls');
         console.error(err);
       } finally {
         setLoading(false);
       }
-    }
-
+    };
+    
     fetchHalls();
   }, []);
-
+  
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
+    return <div className="p-4">Loading...</div>;
   }
-
-  if (error) {
-    return (
-      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-        {error}
-      </div>
-    );
-  }
-
+  
   return (
-    <AuthGuard allowedRoles={[UserType.COACH]}>
-      <div>
-        <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Available Halls</h1>
+    <div className="max-w-4xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Chess Halls</h1>
         
-        <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  ID
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Country
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Capacity
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {halls.length > 0 ? (
-                halls.map((hall) => (
-                  <tr key={hall.hall_id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {hall.hall_id}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                      {hall.hall_name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {hall.country}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {hall.capacity}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                    No halls found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        {user?.userType === 'MANAGER' && (
+          <Link
+            href="/dashboard/halls/manage"
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Manage Halls
+          </Link>
+        )}
       </div>
-    </AuthGuard>
+      
+      {error && (
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+          <p className="text-red-700">{error}</p>
+        </div>
+      )}
+      
+      <div className="bg-white shadow rounded-lg overflow-hidden">
+        {halls.length === 0 ? (
+          <p className="p-4 text-gray-500">No halls found in the database.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Country</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Capacity</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {halls.map((hall) => (
+                  <tr key={hall.hall_id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">{hall.hall_id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{hall.hall_name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">{hall.hall_country}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">{hall.hall_capacity}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+      
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        {halls.slice(0, 3).map((hall) => (
+          <div key={hall.hall_id} className="bg-white shadow rounded-lg p-6">
+            <h2 className="text-lg font-semibold mb-2">{hall.hall_name}</h2>
+            <p className="text-gray-500 mb-4">Location: {hall.hall_country}</p>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Capacity:</span>
+              <span className="font-medium">{hall.hall_capacity} tables</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 } 

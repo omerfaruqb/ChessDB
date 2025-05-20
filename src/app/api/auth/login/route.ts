@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createAuthService } from '@/domains/auth/authService';
+import { cookies } from 'next/headers';
+import { createAuthService } from '@/domains/auth/service';
 
 export async function POST(request: NextRequest) {
   try {
@@ -7,7 +8,7 @@ export async function POST(request: NextRequest) {
     
     if (!username || !password) {
       return NextResponse.json(
-        { message: 'Username and password are required' },
+        { success: false, message: 'Username and password are required' },
         { status: 400 }
       );
     }
@@ -15,16 +16,36 @@ export async function POST(request: NextRequest) {
     const authService = createAuthService();
     
     try {
-      const token = await authService.login(username, password);
-      return NextResponse.json({ token });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Authentication failed';
-      return NextResponse.json({ message }, { status: 401 });
+      const userData = await authService.login(username, password);
+      
+      // Set session cookie
+      const cookieStore = await cookies();
+      cookieStore.set({
+        name: 'auth_session',
+        value: JSON.stringify({
+          username: userData.username,
+          userType: userData.userType,
+        }),
+        httpOnly: true,
+        path: '/',
+        maxAge: 60 * 60 * 24, // 24 hours
+        sameSite: 'strict',
+      });
+
+      return NextResponse.json({
+        success: true,
+        user: userData,
+      });
+    } catch (err: any) {
+      return NextResponse.json(
+        { success: false, message: err.message || 'Invalid username or password' },
+        { status: 401 }
+      );
     }
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { success: false, message: 'An error occurred during login' },
       { status: 500 }
     );
   }

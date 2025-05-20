@@ -1,54 +1,61 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, UserType } from '@/domains/user/types';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { User, Player, Coach, Arbiter, Manager, UserType } from '@/domains/user/types';
+
+// Define a type that encompasses all possible user types
+type AuthUser = (User | Player | Coach | Arbiter | Manager) & { userType: UserType };
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   loading: boolean;
-  login: (username: string, password: string) => Promise<void>;
-  logout: () => void;
   error: string | null;
+  login: (username: string, password: string) => Promise<boolean>;
+  logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Create context with default values
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  loading: true,
+  error: null,
+  login: async () => false,
+  logout: () => {},
+});
 
+// Auth Provider Component
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Check if user is already logged in
   useEffect(() => {
-    // Check for stored token on initial load
-    const token = localStorage.getItem('auth_token');
-    if (token) {
+    const checkAuthStatus = async () => {
       try {
-        // Decode token to get user info (in a real app, validate the token with the server)
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        if (payload && payload.username && payload.userType) {
-          setUser({
-            username: payload.username,
-            userType: payload.userType as UserType,
-            // These fields aren't in the token, but required by the User interface
-            // In a real app, you'd fetch the full user profile
-            password: '',
-            name: '',
-            surname: '',
-            nationality: ''
-          });
+        const res = await fetch('/api/auth/status');
+        const data = await res.json();
+
+        if (data.isAuthenticated && data.user) {
+          setUser(data.user as AuthUser);
         }
-      } catch (e) {
-        localStorage.removeItem('auth_token');
+      } catch (err) {
+        console.error('Auth status check failed:', err);
+      } finally {
+        setLoading(false);
       }
-    }
-    setLoading(false);
+    };
+
+    checkAuthStatus();
   }, []);
 
-  const login = async (username: string, password: string) => {
-    setLoading(true);
-    setError(null);
+  // Login function
+  const login = async (username: string, password: string): Promise<boolean> => {
     try {
-      const response = await fetch('/api/auth/login', {
+      setLoading(true);
+      setError(null);
+
+      const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,49 +63,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ username, password }),
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Login failed');
+      const data = await res.json();
+
+      if (data.success) {
+        setUser(data.user as AuthUser);
+        return true;
+      } else {
+        setError(data.message || 'Login failed');
+        return false;
       }
-
-      const data = await response.json();
-      localStorage.setItem('auth_token', data.token);
-
-      // Decode token to get user info
-      const payload = JSON.parse(atob(data.token.split('.')[1]));
-      setUser({
-        username: payload.username,
-        userType: payload.userType as UserType,
-        // These fields aren't in the token, but required by the User interface
-        password: '',
-        name: '',
-        surname: '',
-        nationality: ''
-      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during login');
-      console.error('Login error:', err);
+      setError('An error occurred during login');
+      console.error(err);
+      return false;
     } finally {
       setLoading(false);
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('auth_token');
-    setUser(null);
+  // Logout function
+  const logout = async () => {
+    try {
+      setLoading(true);
+      
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+      
+      setUser(null);
+    } catch (err) {
+      console.error('Logout failed:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, error }}>
+    <AuthContext.Provider value={{ user, loading, error, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
+// Custom hook to use the auth context
 export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-} 
+  return useContext(AuthContext);
+}
