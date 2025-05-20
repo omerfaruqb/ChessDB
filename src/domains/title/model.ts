@@ -37,8 +37,8 @@ export class TitleModel {
     private static readonly PLAYER_TITLE_TABLE = 'player_titles';
     private db: Pool;
 
-    constructor() {
-        this.db = getDatabase();
+    constructor(db: Pool) {
+        this.db = db;
     }
 
     async getAllTitles(): Promise<Title[]> {

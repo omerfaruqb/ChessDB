@@ -4,6 +4,7 @@ import { Pool } from 'mysql2/promise';
 
 export class HallModel {
     private db: Pool;
+    private static readonly TABLE_NAME = 'Halls';
 
     constructor(db: Pool) {
         this.db = db;
@@ -12,7 +13,7 @@ export class HallModel {
     async createHall(hall: Omit<Hall, 'hall_id' | 'created_at' | 'updated_at'>): Promise<Hall> {
         try {
             const [result] = await this.db.execute(
-                'INSERT INTO halls (hall_name, hall_country, hall_capacity) VALUES (?, ?, ?)',
+                `INSERT INTO ${HallModel.TABLE_NAME} (hall_name, hall_country, hall_capacity) VALUES (?, ?, ?)`,
                 [hall.hall_name, hall.hall_country, hall.hall_capacity]
             ) as any;
             
@@ -36,7 +37,7 @@ export class HallModel {
     async getHall(hallId: number): Promise<Hall | undefined> {
         try {
             const [rows] = await this.db.execute(
-                'SELECT * FROM halls WHERE hall_id = ?',
+                `SELECT * FROM ${HallModel.TABLE_NAME} WHERE hall_id = ?`,
                 [hallId]
             ) as any;
             
@@ -65,14 +66,14 @@ export class HallModel {
             values.push(hallId);
 
             await conn.execute(
-                `UPDATE halls 
+                `UPDATE ${HallModel.TABLE_NAME} 
                  SET ${setClause}, updated_at = CURRENT_TIMESTAMP 
                  WHERE hall_id = ?`,
                 values
             );
 
             const [rows] = await conn.execute(
-                'SELECT * FROM halls WHERE hall_id = ?',
+                `SELECT * FROM ${HallModel.TABLE_NAME} WHERE hall_id = ?`,
                 [hallId]
             ) as any;
 
@@ -88,7 +89,7 @@ export class HallModel {
     async getAllHalls(): Promise<Hall[]> {
         try {
             const [rows] = await this.db.execute(
-                'SELECT * FROM halls ORDER BY hall_name'
+                `SELECT * FROM ${HallModel.TABLE_NAME} ORDER BY hall_name`
             ) as any;
             return rows as Hall[];
         } catch (error) {
@@ -100,7 +101,7 @@ export class HallModel {
     async deleteHall(hallId: number): Promise<boolean> {
         try {
             const [result] = await this.db.execute(
-                'DELETE FROM halls WHERE hall_id = ?',
+                `DELETE FROM ${HallModel.TABLE_NAME} WHERE hall_id = ?`,
                 [hallId]
             );
             return (result as any).affectedRows > 0;

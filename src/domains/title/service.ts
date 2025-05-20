@@ -1,9 +1,11 @@
 import { TitleModel } from "./model";
 import { Title } from "./types";
-
+import { getDatabase } from "@/shared/db";
 export class TitleService {
-    constructor(private titleModel: TitleModel) {
-        this.titleModel = titleModel;
+    private readonly titleModel: TitleModel;
+
+    constructor() {
+        this.titleModel = new TitleModel(getDatabase());
     }
     async getTitleById(id: number): Promise<Title> {
         const title = await this.titleModel.getTitleById(id);

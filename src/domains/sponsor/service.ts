@@ -1,18 +1,27 @@
 import { SponsorModel } from "./model";
 import { Sponsor } from "./types";
-
+import { getDatabase } from "../../shared/db";
 
 export class SponsorService {
-    constructor(private sponsorModel: SponsorModel) {
-        this.sponsorModel = sponsorModel;
+    private readonly sponsorModel: SponsorModel;
+
+    constructor() {
+        this.sponsorModel = new SponsorModel(getDatabase());
     }
+
     async getSponsorById(id: number): Promise<Sponsor> {
-        return this.sponsorModel.getSponsorById(id);
+        return await this.sponsorModel.getSponsor(id);
     }
     async getAllSponsors(): Promise<Sponsor[]> {
-        return this.sponsorModel.getAllSponsors();
+        return await this.sponsorModel.getAllSponsors();
     }
     async createSponsor(sponsor: Sponsor): Promise<Sponsor> {
-        return this.sponsorModel.createSponsor(sponsor);
+        return await this.sponsorModel.createSponsor(sponsor);
+    }
+    async updateSponsor(id: number, sponsor: Sponsor): Promise<boolean> {
+        return await this.sponsorModel.updateSponsor(id, sponsor);
+    }
+    async deleteSponsor(id: number): Promise<boolean> {
+        return await this.sponsorModel.deleteSponsor(id);
     }
 }

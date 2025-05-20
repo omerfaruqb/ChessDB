@@ -1,12 +1,16 @@
 import { MatchModel } from './model';
 import { Match, MatchResult } from './types';
+import { getDatabase } from '../../shared/db';
+
 /**
  * Service for managing chess matches
  */
 export class MatchService {
 
-  constructor(private matchModel: MatchModel) {
-    this.matchModel = matchModel;
+  private readonly matchModel: MatchModel;
+
+  constructor() {
+    this.matchModel = new MatchModel(getDatabase());
   }
 
   async createMatch(data: Match): Promise<Match> {

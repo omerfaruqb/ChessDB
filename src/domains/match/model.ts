@@ -1,13 +1,12 @@
-import { getDatabase } from '../../shared/db';
-import { Match } from "./types";
+import { Match } from "./types";    
 import { Pool } from 'mysql2/promise';
 
 export class MatchModel {
     private static readonly TABLE_NAME = 'matches';
     private db: Pool;
 
-    constructor() {
-        this.db = getDatabase();
+    constructor(db: Pool) {
+        this.db = db;
     }
 
     async createMatch(match: Omit<Match, 'match_id' | 'rating' | 'match_result'>): Promise<Match> {
