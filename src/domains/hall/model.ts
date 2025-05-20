@@ -1,18 +1,19 @@
-import { getDatabase, withTransaction } from '../../shared/db';
+import { withTransaction } from '../../shared/db';
 import { Hall } from "./types";
+import { Pool } from 'mysql2/promise';
 
 export class HallModel {
-    private db: ReturnType<typeof getDatabase>;
+    private db: Pool;
 
-    constructor() {
-        this.db = getDatabase();
+    constructor(db: Pool) {
+        this.db = db;
     }
 
     async createHall(hall: Omit<Hall, 'hall_id' | 'created_at' | 'updated_at'>): Promise<Hall> {
         try {
             const [result] = await this.db.execute(
-                'INSERT INTO halls (hall_name, country, capacity) VALUES (?, ?, ?)',
-                [hall.hall_name, hall.country, hall.capacity]
+                'INSERT INTO halls (hall_name, hall_country, hall_capacity) VALUES (?, ?, ?)',
+                [hall.hall_name, hall.hall_country, hall.hall_capacity]
             ) as any;
             
             const insertId = result.insertId;
@@ -96,12 +97,13 @@ export class HallModel {
         }
     }
 
-    async deleteHall(hallId: number): Promise<void> {
+    async deleteHall(hallId: number): Promise<boolean> {
         try {
-            await this.db.execute(
+            const [result] = await this.db.execute(
                 'DELETE FROM halls WHERE hall_id = ?',
                 [hallId]
             );
+            return (result as any).affectedRows > 0;
         } catch (error) {
             console.error(`Error deleting hall ${hallId}:`, error);
             throw error;

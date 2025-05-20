@@ -1,6 +1,5 @@
 import { ArbiterCertificationModel } from "./model";
 import {ArbiterCertification } from "./types";
-import { Pool } from "mysql2/promise";
 import { getDatabase } from "../../shared/db";
 
 export class ArbiterCertificationService {
