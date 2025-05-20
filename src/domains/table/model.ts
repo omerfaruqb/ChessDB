@@ -1,4 +1,4 @@
-import { getDatabase, withTransaction } from '../../shared/db';
+import { getDatabase } from '../../shared/db';
 import { Table } from "./types";
 import { Pool } from 'mysql2/promise';
 

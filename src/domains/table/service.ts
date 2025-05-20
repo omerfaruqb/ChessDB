@@ -25,3 +25,6 @@ export class TableService {
     }
 }
 
+export function createTableService(tableModel: TableModel): TableService {
+    return new TableService(tableModel);
+}

@@ -27,3 +27,7 @@ export class CoachCertificationService {
         return await this.coachCertificationModel.getAllCertifications();
     }
 }
+
+export function createCoachCertificationService(coachCertificationModel: CoachCertificationModel): CoachCertificationService {
+    return new CoachCertificationService(coachCertificationModel);
+}

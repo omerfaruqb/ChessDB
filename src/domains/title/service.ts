@@ -17,3 +17,7 @@ export class TitleService {
     }
 
 }
+
+export function createTitleService(titleModel: TitleModel): TitleService {
+    return new TitleService(titleModel);
+}

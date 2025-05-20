@@ -22,3 +22,7 @@ export class SponsorService {
         return await this.sponsorModel.deleteSponsor(id);
     }
 }
+
+export function createSponsorService(sponsorModel: SponsorModel): SponsorService {
+    return new SponsorService(sponsorModel);
+}

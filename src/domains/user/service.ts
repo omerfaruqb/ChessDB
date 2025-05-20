@@ -29,3 +29,6 @@ export class UserService {
   }
 }
 
+export function createUserService(userModel: UserModel): UserService {
+  return new UserService(userModel);
+}

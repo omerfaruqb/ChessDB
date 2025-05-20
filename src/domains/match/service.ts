@@ -48,3 +48,6 @@ export class MatchService {
 
 }
 
+export function createMatchService(matchModel: MatchModel): MatchService {
+  return new MatchService(matchModel);
+}

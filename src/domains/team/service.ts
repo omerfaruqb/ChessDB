@@ -49,3 +49,6 @@ export class TeamService {
     
 }
 
+export function createTeamService(teamModel: TeamModel): TeamService {
+    return new TeamService(teamModel);
+}

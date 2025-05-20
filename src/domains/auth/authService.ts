@@ -1,8 +1,5 @@
 import { UserType } from "@/domains/user/types";
-import {
-  UserService,
-  createUserService,
-} from "../user/service";
+import { userService } from "@/domains/user/controller";
 import jwt from "jsonwebtoken";
 
 // JWT token payload
@@ -19,8 +16,7 @@ interface JwtPayload {
  * Authentication service for handling user login, registration, and session management
  */
 export class AuthService {
-  constructor(private userService: UserService) {
-    this.userService = userService;
+  constructor() {
   }
   /**
    * Log in a user with their credentials
@@ -29,7 +25,7 @@ export class AuthService {
    * @returns JWT token, containing username, and userType
    */
   async login(username: string, password: string): Promise<string> {
-    const user = await this.userService.getUserByUsername(username);
+    const user = await userService.getUserByUsername(username);
     if (!user) {
       throw new Error("User not found");
     }
@@ -49,7 +45,6 @@ export class AuthService {
 }
 
 export function createAuthService(): AuthService {
-  const userService = createUserService();
-  return new AuthService(userService);
+  return new AuthService();
 }
 

@@ -1,13 +1,11 @@
 import { HallModel } from "./model";
 import { Hall } from "./types";
-import { getDatabase } from "../../shared/db";
 
 
 export class HallService {
-    private readonly hallModel: HallModel;
 
-    constructor() {
-        this.hallModel = new HallModel(getDatabase());
+    constructor(private readonly hallModel: HallModel) {
+        this.hallModel = hallModel;
     }
     async createHall(hall: Hall): Promise<Hall> {
         return await this.hallModel.createHall(hall);
@@ -24,4 +22,8 @@ export class HallService {
     async getAllHalls(): Promise<Hall[]> {
         return await this.hallModel.getAllHalls();
     }
+}
+
+export function createHallService(hallModel: HallModel): HallService {
+    return new HallService(hallModel);
 }

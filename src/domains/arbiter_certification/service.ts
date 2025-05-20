@@ -27,5 +27,8 @@ export class ArbiterCertificationService {
         return await this.arbiterCertificationModel.getAllCertifications();
     }
     
-    
+}
+
+export function createArbiterCertificationService(arbiterCertificationModel: ArbiterCertificationModel): ArbiterCertificationService {
+    return new ArbiterCertificationService(arbiterCertificationModel);
 }
