@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS titles (
 
 CREATE TABLE IF NOT EXISTS players (
     username VARCHAR(50) PRIMARY KEY,
-    date_of_birth DATE NOT NULL CHECK (date_of_birth REGEXP '^[0-9]{2}-[0-9]{2}-[0-9]{4}$'),
+    date_of_birth DATE NOT NULL,
     elo_rating INT NOT NULL CHECK (elo_rating > 1000),
     fide_id VARCHAR(20) NOT NULL UNIQUE,
     title_id INT,
@@ -65,8 +65,8 @@ CREATE TABLE IF NOT EXISTS teams (
     team_id INT PRIMARY KEY,
     team_name VARCHAR(50) NOT NULL,
     coach_username VARCHAR(50) NOT NULL UNIQUE,
-    contract_start DATE NOT NULL CHECK (contract_start REGEXP '^[0-9]{2}-[0-9]{2}-[0-9]{4}$'),
-    contract_finish DATE NOT NULL CHECK (contract_finish REGEXP '^[0-9]{2}-[0-9]{2}-[0-9]{4}$'),
+    contract_start DATE NOT NULL,
+    contract_finish DATE NOT NULL,
     sponsor_id INT NOT NULL,
     FOREIGN KEY (coach_username) REFERENCES coaches(username),
     FOREIGN KEY (sponsor_id) REFERENCES sponsors(sponsor_id),
@@ -102,8 +102,8 @@ CREATE TABLE IF NOT EXISTS tables (
 CREATE TABLE IF NOT EXISTS tournaments (
     tournament_id INT PRIMARY KEY,
     tournament_name VARCHAR(50) NOT NULL,
-    start_date DATE NOT NULL CHECK (start_date REGEXP '^[0-9]{2}-[0-9]{2}-[0-9]{4}$'),
-    end_date DATE NOT NULL CHECK (end_date REGEXP '^[0-9]{2}-[0-9]{2}-[0-9]{4}$'),
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
     format VARCHAR(20) NOT NULL,
     chief_arbiter_username VARCHAR(50) NOT NULL,
     FOREIGN KEY (chief_arbiter_username) REFERENCES arbiters(username),
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS tournaments (
 
 CREATE TABLE IF NOT EXISTS matches (
     match_id INT PRIMARY KEY,
-    date DATE NOT NULL CHECK (date REGEXP '^[0-9]{2}-[0-9]{2}-[0-9]{4}$'),
+    date DATE NOT NULL,
     time_slot INT NOT NULL CHECK (time_slot BETWEEN 1 AND 3),
     hall_id INT NOT NULL,
     table_id INT NOT NULL,
@@ -210,7 +210,7 @@ INSERT INTO users (username, password, name, surname, nationality, user_type) VA
 INSERT INTO users (username, password, name, surname, nationality, user_type) VALUES ('peter', 'P3ter!1', 'Peter', 'Dubois', 'FRA', 'PLAYER');
 INSERT INTO users (username, password, name, surname, nationality, user_type) VALUES ('quinn', 'Quinn%x', 'Quinn', 'Ma', 'CHN', 'PLAYER');
 INSERT INTO users (username, password, name, surname, nationality, user_type) VALUES ('rachel', 'Rach3l@', 'Rachel', 'Silva', 'BRA', 'PLAYER');
-INSERT INTO users (username, password, name, surname, nationality, user_type) VALUES ('sam', 'S@mWise', 'Sam', 'O’Neill', 'IRE', 'PLAYER');
+INSERT INTO users (username, password, name, surname, nationality, user_type) VALUES ('sam', 'S@mWise', 'Sam', 'O''Neill', 'IRE', 'PLAYER');
 INSERT INTO users (username, password, name, surname, nationality, user_type) VALUES ('tina', 'T!naChess', 'Tina', 'Zhou', 'KOR', 'PLAYER');
 INSERT INTO users (username, password, name, surname, nationality, user_type) VALUES ('umar', 'Umar$22', 'Umar', 'Haddad', 'UAE', 'PLAYER');
 INSERT INTO users (username, password, name, surname, nationality, user_type) VALUES ('vera', 'V3ra#21', 'Vera', 'Nowak', 'POL', 'PLAYER');
@@ -325,7 +325,7 @@ INSERT INTO coaches (username) VALUES ('sofia_lop');
 INSERT INTO coaches (username) VALUES ('arslan_yusuf');
 INSERT INTO sponsors (sponsor_id, sponsor_name) VALUES (100, 'ChessVision');
 INSERT INTO sponsors (sponsor_id, sponsor_name) VALUES (101, 'Grandmaster Corp');
-INSERT INTO sponsors (sponsor_id, sponsor_name) VALUES (102, 'Queen’s Gambit Ltd.');
+INSERT INTO sponsors (sponsor_id, sponsor_name) VALUES (102, 'Queen's Gambit Ltd.');
 INSERT INTO sponsors (sponsor_id, sponsor_name) VALUES (103, 'MateMate Inc.');
 INSERT INTO sponsors (sponsor_id, sponsor_name) VALUES (104, 'RookTech');
 INSERT INTO sponsors (sponsor_id, sponsor_name) VALUES (105, 'PawnPower Solutions');
@@ -334,14 +334,14 @@ INSERT INTO sponsors (sponsor_id, sponsor_name) VALUES (107, 'Endgame Enterprise
 INSERT INTO sponsors (sponsor_id, sponsor_name) VALUES (108, 'King''s Arena Foundation');
 INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (1, 'Knights', 'carol', 01-01-2023, 01-01-2026, 100);
 INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (2, 'Rooks', 'david_b', 15-02-2024, 15-02-2026, 101);
-INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (3, 'Bishops', 'emma_green', 03-01-2022, 03-01-2025, 102);
-INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (4, 'Pawns', 'fatih', 05-10-2024, 05-10-2026, 100);
-INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (5, 'Queens', 'hana', 04-01-2023, 10-01-2024, 103);
-INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (6, 'Kings', 'lucaas', 01-01-2024, 01-01-2025, 104);
-INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (7, 'Castles', 'mia_rose', 06-01-2024, 06-01-2025, 101);
-INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (8, 'Checkmates', 'onur', 15-03-2023, 15-09-2025, 105);
-INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (9, 'En Passants', 'sofia_lop', 05-01-2024, 11-01-2025, 106);
-INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (10, 'Blitz Masters', 'arslan_yusuf', 02-01-2024, 08-01-2026, 107);
+INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (3, 'Bishops', 'emma_green', 2022-01-03, 2025-01-03, 102);
+INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (4, 'Pawns', 'fatih', 2024-10-05, 2026-10-05, 100);
+INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (5, 'Queens', 'hana', 2023-01-04, 2024-01-10, 103);
+INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (6, 'Kings', 'lucaas', 2024-01-01, 2025-01-01, 104);
+INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (7, 'Castles', 'mia_rose', 2024-01-06, 2025-01-06, 101);
+INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (8, 'Checkmates', 'onur', 2023-03-15, 2025-09-15, 105);
+INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (9, 'En Passants', 'sofia_lop', 2024-01-05, 2025-01-11, 106);
+INSERT INTO teams (team_id, team_name, coach_username, contract_start, contract_finish, sponsor_id) VALUES (10, 'Blitz Masters', 'arslan_yusuf', 2024-01-02, 2026-01-08, 107);
 INSERT INTO player_teams (username, team_id) VALUES ('alice', 1);
 INSERT INTO player_teams (username, team_id) VALUES ('bob1', 2);
 INSERT INTO player_teams (username, team_id) VALUES ('clara', 3);
@@ -455,25 +455,25 @@ INSERT INTO tables (hall_id, table_id) VALUES (7, 13);
 INSERT INTO tables (hall_id, table_id) VALUES (8, 14);
 INSERT INTO tables (hall_id, table_id) VALUES (9, 15);
 INSERT INTO tables (hall_id, table_id) VALUES (10, 16);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (1, 02-01-2025, 1, 1, 1, 1, 2, 'alice', 'bob1', 'erin', 8.2, 'draw', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (2, 02-01-2025, 3, 1, 2, 3, 4, 'clara', 'david', 'lucy', 7.9, 'black_wins', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (3, 02-02-2025, 1, 2, 1, 5, 6, 'emma', 'felix', 'mark', NULL, 'black_wins', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (4, 02-02-2025, 3, 2, 2, 7, 8, 'grace', 'henry', 'erin', 8.5, 'draw', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (5, 02-03-2025, 1, 3, 1, 9, 10, 'isabel', 'jack', 'lucy', NULL, 'black_wins', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (6, 02-03-2025, 3, 3, 2, 1, 3, 'kara', 'liam', 'mohamed', NULL, 'white_wins', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (7, 02-04-2025, 1, 4, 1, 2, 5, 'mia', 'noah', 'erin', 4.5, 'black_wins', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (8, 02-04-2025, 3, 4, 2, 6, 7, 'olivia', 'peter', 'sara', 3.1, 'white_wins', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (9, 02-05-2025, 1, 5, 1, 8, 9, 'quinn', 'rachel', 'ana', 7.7, 'black_wins', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (10, 02-05-2025, 3, 5, 2, 10, 1, 'sam', 'tina', 'mark', 6.4, 'black_wins', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (11, 02-06-2025, 1, 1, 1, 3, 5, 'tina', 'umar', 'james', 5.1, 'white_wins', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (12, 02-06-2025, 3, 1, 2, 4, 6, 'umar', 'vera', 'lucy', NULL, 'white_wins', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (13, 02-07-2025, 1, 2, 1, 7, 9, 'vera', 'will', 'sara', NULL, 'black_wins', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (14, 02-07-2025, 3, 2, 2, 8, 10, 'will', 'xena', 'mohamed', 2.6, 'draw', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (15, 02-08-2025, 1, 3, 1, 1, 4, 'xena', 'yusuff', 'erin', 7.1, 'draw', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (16, 02-08-2025, 3, 3, 2, 2, 5, 'yusuff', 'zoe', 'ana', 6.3, 'white_wins', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (17, 02-09-2025, 1, 4, 1, 3, 6, 'zoe', 'hakan', 'james', NULL, 'black_wins', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (18, 02-09-2025, 3, 4, 2, 7, 10, 'hakan', 'julia', 'mark', 4.9, 'black_wins', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (19, 02-10-2025, 1, 5, 1, 5, 8, 'julia', 'mehmet', 'lucy', 9.7, 'black_wins', NULL);
-INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (20, 02-10-2025, 3, 5, 2, 6, 9, 'mehmet', 'elena', 'ahmet', 7.4, 'white_wins', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (1, 2025-01-02, 1, 1, 1, 1, 2, 'alice', 'bob1', 'erin', 8.2, 'draw', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (2, 2025-01-02, 3, 1, 2, 3, 4, 'clara', 'david', 'lucy', 7.9, 'black_wins', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (3, 2025-02-02, 1, 2, 1, 5, 6, 'emma', 'felix', 'mark', NULL, 'black_wins', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (4, 2025-02-02, 3, 2, 2, 7, 8, 'grace', 'henry', 'erin', 8.5, 'draw', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (5, 2025-03-02, 1, 3, 1, 9, 10, 'isabel', 'jack', 'lucy', NULL, 'black_wins', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (6, 2025-03-02, 3, 3, 2, 1, 3, 'kara', 'liam', 'mohamed', NULL, 'white_wins', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (7, 2025-04-02, 1, 4, 1, 2, 5, 'mia', 'noah', 'erin', 4.5, 'black_wins', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (8, 2025-04-02, 3, 4, 2, 6, 7, 'olivia', 'peter', 'sara', 3.1, 'white_wins', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (9, 2025-05-02, 1, 5, 1, 8, 9, 'quinn', 'rachel', 'ana', 7.7, 'black_wins', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (10, 2025-05-02, 3, 5, 2, 10, 1, 'sam', 'tina', 'mark', 6.4, 'black_wins', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (11, 2025-06-02, 1, 1, 1, 3, 5, 'tina', 'umar', 'james', 5.1, 'white_wins', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (12, 2025-06-02, 3, 1, 2, 4, 6, 'umar', 'vera', 'lucy', NULL, 'white_wins', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (13, 2025-07-02, 1, 2, 1, 7, 9, 'vera', 'will', 'sara', NULL, 'black_wins', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (14, 2025-07-02, 3, 2, 2, 8, 10, 'will', 'xena', 'mohamed', 2.6, 'draw', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (15, 2025-08-02, 1, 3, 1, 1, 4, 'xena', 'yusuff', 'erin', 7.1, 'draw', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (16, 2025-08-02, 3, 3, 2, 2, 5, 'yusuff', 'zoe', 'ana', 6.3, 'white_wins', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (17, 2025-09-02, 1, 4, 1, 3, 6, 'zoe', 'hakan', 'james', NULL, 'black_wins', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (18, 2025-09-02, 3, 4, 2, 7, 10, 'hakan', 'julia', 'mark', 4.9, 'black_wins', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (19, 2025-10-02, 1, 5, 1, 5, 8, 'julia', 'mehmet', 'lucy', 9.7, 'black_wins', NULL);
+INSERT INTO matches (match_id, date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username, rating, match_result, tournament_id) VALUES (20, 2025-10-02, 3, 5, 2, 6, 9, 'mehmet', 'elena', 'ahmet', 7.4, 'white_wins', NULL);
 
 SET foreign_key_checks = 1
