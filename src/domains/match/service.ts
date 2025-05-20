@@ -16,20 +16,33 @@ export class MatchService {
     return this.matchModel.createMatch(data);
   }
   
-  async getMatchById(id: number): Promise<Match> {
+  async getMatch(matchId: number): Promise<Match | undefined> {
+    return this.matchModel.getMatch(matchId);
+  }
+
+  async updateMatch(matchId: number, data: Partial<Match>): Promise<boolean> {
+    return this.matchModel.updateMatch(matchId, data as Match);
+  }
+
+  async deleteMatch(matchId: number): Promise<boolean> {
+    return this.matchModel.deleteMatch(matchId);
+  }
+  
+  async getMatchById(id: number): Promise<Match | undefined> {
     return this.matchModel.getMatch(id);
   }
 
-  async getMatchesByPlayerId(playerId: number): Promise<Match[]> {
-    return this.matchModel.getMatchesByPlayerId(playerId);
+  async getMatchesByPlayer(playerId: number): Promise<Match[]> {
+    return this.matchModel.getMatchesByPlayer(playerId);
   }
 
-  async updateMatch(id: number, data: Partial<Match>): Promise<Match> {
-    return this.matchModel.updateMatch(id, data as Match);
+  async getMatchesByTeam(teamId: number): Promise<Match[]> {
+    return this.matchModel.getMatchesByTeam(teamId);
   }
-  
-  async submitResult(id: number, result: MatchResult): Promise<Match> {
-    return this.matchModel.submitResult(id, result);
+
+  async getMatchesByArbiter(arbiterUsername: string): Promise<Match[]> {
+    return this.matchModel.getMatchesByArbiter(arbiterUsername);
   }
+
 }
 

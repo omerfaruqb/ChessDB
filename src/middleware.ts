@@ -46,7 +46,7 @@ export function middleware(request: NextRequest) {
   const requiredRoles = Object.entries(ROLE_PROTECTED_PATHS)
     .find(([path]) => pathname.startsWith(path))?.[1];
 
-  if (requiredRoles && !requiredRoles.includes() {
+  if (requiredRoles && !requiredRoles.includes(auth.user?.userType || '')) {
     if (pathname.startsWith('/api/')) {
       return NextResponse.json(
         { error: 'Insufficient permissions' },

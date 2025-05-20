@@ -1,5 +1,5 @@
 import { initDatabase, closeDatabase } from './shared/db';
-import { HallModel } from './domains/hall/models';
+import { HallModel } from './domains/hall/model';
 
 async function testDatabase() {
     try {

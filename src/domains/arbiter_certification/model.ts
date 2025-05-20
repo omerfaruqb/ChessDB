@@ -1,15 +1,24 @@
 import { getDatabase, withTransaction } from '../../shared/db';
 import { ArbiterCertification } from "./types";
+import { Pool, ResultSetHeader } from 'mysql2/promise';
 
 export class ArbiterCertificationModel {
     private static readonly TABLE_NAME = 'arbiter_certifications';
+    private db: Pool;
+
+    constructor(db: Pool) {
+        this.db = db;
+    }
 
     async createCertification(certification: ArbiterCertification): Promise<ArbiterCertification> {
-        const db = await getDatabase();
-        const [result] = await db.execute(
+        const [result] = await this.db.execute<ResultSetHeader>(
             `INSERT INTO ${ArbiterCertificationModel.TABLE_NAME} (username, certification) VALUES (?, ?)`,
             [certification.username, certification.certification]
         );
+
+        if (result.affectedRows === 0) {
+            throw new Error('Failed to create certification');
+        }
         
         return {
             ...certification
@@ -17,13 +26,12 @@ export class ArbiterCertificationModel {
     }
 
     async getCertifications(username: string): Promise<ArbiterCertification[]> {
-        const db = await getDatabase();
-        const [rows] = await db.query(
+        const [rows] = await this.db.execute(
             `SELECT * FROM ${ArbiterCertificationModel.TABLE_NAME} WHERE username = ?`,
             [username]
-        ) as any;
+        );
         
-        return rows as ArbiterCertification[];
+        return (rows as any[]) as ArbiterCertification[];
     }
 
     async updateCertification(
@@ -31,33 +39,30 @@ export class ArbiterCertificationModel {
         oldCertification: string,
         newCertification: string
     ): Promise<boolean> {
-        const db = await getDatabase();
-        const [result] = await db.execute(
+        const [result] = await this.db.execute<ResultSetHeader>(
             `UPDATE ${ArbiterCertificationModel.TABLE_NAME} 
              SET certification = ? 
              WHERE username = ? AND certification = ?`,
             [newCertification, username, oldCertification]
-        ) as any;
+        );
         
         return result.affectedRows > 0;
     }
     
     async deleteCertification(username: string, certification: string): Promise<boolean> {
-        const db = await getDatabase();
-        const [result] = await db.execute(
+        const [result] = await this.db.execute<ResultSetHeader>(
             `DELETE FROM ${ArbiterCertificationModel.TABLE_NAME} 
              WHERE username = ? AND certification = ?`,
             [username, certification]
-        ) as any;
+        );
         
         return result.affectedRows > 0;
     }
     
     async getAllCertifications(): Promise<ArbiterCertification[]> {
-        const db = await getDatabase();
-        const [rows] = await db.query(
+        const [rows] = await this.db.query(
             `SELECT * FROM ${ArbiterCertificationModel.TABLE_NAME}`
-        ) as any;
+        ) as any; 
         
         return rows as ArbiterCertification[];
     }

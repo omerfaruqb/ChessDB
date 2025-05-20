@@ -1,13 +1,15 @@
 import { Player, User, Coach, Arbiter } from '@/domains/user/types'
-import { UserModel, createUserModel } from '../models/userModel'
+import { UserModel, createUserModel } from './model'
 
 /**
  * Service for managing user accounts and profiles
  */
 export class UserService {
 
-  constructor(private userModel: UserModel) {
-    this.userModel = userModel || createUserModel();
+  private userModel: UserModel;
+
+  constructor(userModel: UserModel) {
+    this.userModel = userModel;
   }
 
   async getUserByUsername(username: string): Promise<User | null> {
@@ -28,5 +30,6 @@ export class UserService {
 }
 
 export function createUserService(): UserService {
-  return new UserService(createUserModel());
+  const userModel = createUserModel();
+  return new UserService(userModel);
 }

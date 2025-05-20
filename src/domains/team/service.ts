@@ -6,18 +6,26 @@ export class TeamService {
         this.teamModel = teamModel;
     }
     async getTeamById(id: number): Promise<Team> {
-        return this.teamModel.getTeamById(id);
+        const team = await this.teamModel.getTeamById(id);
+        if (!team) {
+            throw new Error('Team not found');
+        }
+        return team;
     }
     async getTeamByName(name: string): Promise<Team> {
-        return this.teamModel.getTeamByName(name);
+        const team = await this.teamModel.getTeamByName(name);
+        if (!team) {
+            throw new Error('Team not found');
+        }
+        return team;
     }
     async getPlayersOfTeam(teamId: number): Promise<PlayerTeam[]> {
         return this.teamModel.getPlayersOfTeam(teamId);
     }
-    async addPlayerToTeam(playerId: number, teamId: number): Promise<PlayerTeam> {
+    async addPlayerToTeam(playerId: number, teamId: number): Promise<boolean> {
         return this.teamModel.addPlayerToTeam(playerId, teamId);
     }
-    async removePlayerFromTeam(playerId: number, teamId: number): Promise<PlayerTeam> {
+    async removePlayerFromTeam(playerId: number, teamId: number): Promise<boolean> {
         return this.teamModel.removePlayerFromTeam(playerId, teamId);
     }
 }

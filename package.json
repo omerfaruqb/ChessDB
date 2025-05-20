@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "db:init": "tsx src/init-db.ts",
+    "dev": "npm run db:init && next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "npm run db:init && next start",
     "lint": "next lint",
     "test:db": "tsx src/test-db.ts",
     "test:db:watch": "tsx watch src/test-db.ts"
@@ -25,13 +26,15 @@
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/jsonwebtoken": "^9.0.9",
-    "@types/node": "^20",
+    "@types/node": "^20.17.48",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "tsx": "^4.19.4",
-    "typescript": "^5"
+    "typescript": "^5.8.3"
   }
 }

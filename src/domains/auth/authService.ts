@@ -1,9 +1,8 @@
 import { UserType } from "@/domains/user/types";
-import { User } from "@/domains/user/types";
 import {
   UserService,
   createUserService,
-} from "../../user/services/userService";
+} from "../user/service";
 import jwt from "jsonwebtoken";
 
 // JWT token payload
@@ -40,7 +39,7 @@ export class AuthService {
     }
     
     // Generate JWT token
-    const payload = {
+    const payload: JwtPayload = {
       username: user.username,
       userType: user.userType,
     };
@@ -49,4 +48,8 @@ export class AuthService {
   }
 }
 
-export default new AuthService(createUserService());
+export function createAuthService(): AuthService {
+  const userService = createUserService();
+  return new AuthService(userService);
+}
+

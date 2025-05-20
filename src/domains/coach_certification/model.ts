@@ -1,12 +1,17 @@
 import { CoachCertification } from "./types";
 import { getDatabase } from "../../shared/db";
+import { Pool } from 'mysql2/promise';
 
 export class CoachCertificationModel {
     private static readonly TABLE_NAME = 'coach_certifications';
+    private db: Pool;
+
+    constructor() {
+        this.db = getDatabase();
+    }
 
     async createCoachCertification(coachCertification: CoachCertification): Promise<CoachCertification> {
-        const db = await getDatabase();
-        const [result] = await db.execute(
+        const [result] = await this.db.execute(
             `INSERT INTO ${CoachCertificationModel.TABLE_NAME} (username, certification) VALUES (?, ?)`,
             [coachCertification.username, coachCertification.certification]
         );
@@ -17,8 +22,7 @@ export class CoachCertificationModel {
     }
 
     async getCoachCertification(username: string): Promise<CoachCertification[]> {
-        const db = await getDatabase();
-        const [rows] = await db.query(
+        const [rows] = await this.db.execute(
             `SELECT * FROM ${CoachCertificationModel.TABLE_NAME} WHERE username = ?`,
             [username]
         );
@@ -31,8 +35,7 @@ export class CoachCertificationModel {
         oldCertification: string,
         newCertification: string
     ): Promise<boolean> {
-        const db = await getDatabase();
-        const [result] = await db.execute(
+        const [result] = await this.db.execute(
             `UPDATE ${CoachCertificationModel.TABLE_NAME} 
              SET certification = ? 
              WHERE username = ? AND certification = ?`,
@@ -43,8 +46,7 @@ export class CoachCertificationModel {
     }
     
     async deleteCoachCertification(username: string, certification: string): Promise<boolean> {
-        const db = await getDatabase();
-        const [result] = await db.execute(
+        const [result] = await this.db.execute(
             `DELETE FROM ${CoachCertificationModel.TABLE_NAME} 
              WHERE username = ? AND certification = ?`,
             [username, certification]
@@ -54,8 +56,7 @@ export class CoachCertificationModel {
     }
     
     async getAllCertifications(): Promise<CoachCertification[]> {
-        const db = await getDatabase();
-        const [rows] = await db.query(
+        const [rows] = await this.db.execute(
             `SELECT * FROM ${CoachCertificationModel.TABLE_NAME}`
         );
         
