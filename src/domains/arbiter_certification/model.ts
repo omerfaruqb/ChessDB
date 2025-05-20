@@ -3,7 +3,7 @@ import { ArbiterCertification } from "./types";
 import { Pool, ResultSetHeader } from 'mysql2/promise';
 
 export class ArbiterCertificationModel {
-    private static readonly TABLE_NAME = 'Arbiter_has_arbiter_cert';
+    private static readonly TABLE_NAME = 'arbiter_has_certification';
     private db: Pool;
 
     constructor(db: Pool) {
@@ -62,9 +62,9 @@ export class ArbiterCertificationModel {
     async getAllCertifications(): Promise<ArbiterCertification[]> {
         const [rows] = await this.db.query(
             `SELECT * FROM ${ArbiterCertificationModel.TABLE_NAME}`
-        ) as any; 
+        ) 
         
-        return rows as ArbiterCertification[];
+        return (rows as any) as ArbiterCertification[];
     }
 }
 

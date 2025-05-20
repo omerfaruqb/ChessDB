@@ -12,7 +12,7 @@ export class MatchModel {
     async createMatch(match: Omit<Match, 'match_id' | 'rating' | 'match_result'>): Promise<Match> {
         const [result] = await this.db.execute(
             `INSERT INTO ${MatchModel.TABLE_NAME} 
-             (date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_id, black_player_id, arbiter_username)
+             (date, time_slot, hall_id, table_id, team1_id, team2_id, white_player_username, black_player_username, arbiter_username)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 match.date, 
@@ -21,8 +21,8 @@ export class MatchModel {
                 match.table_id,
                 match.team1_id,
                 match.team2_id,
-                match.white_player_id,
-                match.black_player_id,
+                match.white_player_username,
+                match.black_player_username,
                 match.arbiter_username
             ]
         ) as any;
@@ -82,12 +82,12 @@ export class MatchModel {
         return rows as Match[];
     }
     
-    async getMatchesByPlayer(playerId: number): Promise<Match[]> {
+    async getMatchesByPlayer(username: string): Promise<Match[]> {
         const [rows] = await this.db.execute(
             `SELECT * FROM ${MatchModel.TABLE_NAME} 
-             WHERE white_player_id = ? OR black_player_id = ?
+             WHERE white_player_username = ? OR black_player_username = ?
              ORDER BY date, time_slot`,
-            [playerId, playerId]
+            [username, username]
         ) as any;
         
         return rows as Match[];

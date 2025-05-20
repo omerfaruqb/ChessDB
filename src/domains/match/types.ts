@@ -1,4 +1,3 @@
-
 export interface Match {
 
   match_id: number;
@@ -13,8 +12,8 @@ export interface Match {
   team1_id: number;
   team2_id: number;
 
-  white_player_id: number;
-  black_player_id: number;
+  white_player_username: string;
+  black_player_username: string;
   match_result: MatchResult;
   arbiter_username: string;
   rating: number | null;

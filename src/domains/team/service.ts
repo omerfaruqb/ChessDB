@@ -43,8 +43,8 @@ export class TeamService {
     async getTeamPlayers(teamId: number): Promise<number[]> {
         return await this.teamModel.getTeamPlayersIds(teamId);
     }
-    async getPlayerTeams(playerId: number): Promise<Team[]> {
-        return await this.teamModel.getPlayerTeams(playerId);
+    async getPlayerTeams(playerUsername: string): Promise<Team[]> {
+        return await this.teamModel.getPlayerTeams(playerUsername);
     }
     
 }

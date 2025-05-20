@@ -3,7 +3,7 @@ import { Table } from "./types";
 import { Pool } from 'mysql2/promise';
 
 export class TableModel {
-    private static readonly TABLE_NAME = 'Tables';
+    private static readonly TABLE_NAME = 'tables';
     private db: Pool;
 
     constructor(db: Pool) {
