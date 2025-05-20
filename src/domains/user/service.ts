@@ -1,14 +1,14 @@
 import { Player, User, Coach, Arbiter } from '@/domains/user/types'
-import { UserModel, createUserModel } from './model'
+import { UserModel } from './model'
 
 /**
  * Service for managing user accounts and profiles
  */
 export class UserService {
 
-  private userModel: UserModel;
+ 
 
-  constructor(userModel: UserModel) {
+  constructor(private readonly userModel: UserModel) {
     this.userModel = userModel;
   }
 
@@ -29,7 +29,6 @@ export class UserService {
   }
 }
 
-export function createUserService(): UserService {
-  const userModel = createUserModel();
+export function createUserService(userModel: UserModel): UserService {
   return new UserService(userModel);
 }

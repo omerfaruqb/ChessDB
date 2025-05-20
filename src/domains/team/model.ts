@@ -8,8 +8,8 @@ export class TeamModel {
     private static readonly PLAYER_TEAM_TABLE = 'player_teams';
     private db: Pool;
 
-    constructor() {
-        this.db = getDatabase();
+    constructor(db: Pool) {
+        this.db = db;
     }
 
     async createTeam(team: Omit<Team, 'team_id'>): Promise<Team> { 
@@ -122,7 +122,7 @@ export class TeamModel {
         return result.affectedRows > 0;
     }
     
-    async getTeamPlayers(teamId: number): Promise<number[]> {
+    async getTeamPlayersIds(teamId: number): Promise<number[]> {
         const [rows] = await this.db.query(
             `SELECT player_id FROM ${TeamModel.PLAYER_TEAM_TABLE} 
              WHERE team_id = ?`,
@@ -152,4 +152,8 @@ export class TeamModel {
         
         return rows as PlayerTeam[];
     }
+}
+
+export function createTeamModel(): TeamModel {
+    return new TeamModel(getDatabase());
 }

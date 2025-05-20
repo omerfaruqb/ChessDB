@@ -24,13 +24,15 @@ export class SponsorModel {
         return newSponsor;
     }
 
-    async getSponsor(sponsorId: number): Promise<Sponsor | undefined> {
+    async getSponsor(sponsorId: number): Promise<Sponsor> {
         const [rows] = await this.db.query(
             `SELECT * FROM ${SponsorModel.TABLE_NAME} WHERE sponsor_id = ?`,
             [sponsorId]
         ) as any;
-        
-        return rows[0] as Sponsor | undefined;
+        if (rows.length === 0) {
+            throw new Error('Sponsor not found');
+        }
+        return rows[0] as Sponsor;
     }
 
     async updateSponsor(sponsorId: number, updates: Partial<Sponsor>): Promise<boolean> {
@@ -79,4 +81,8 @@ export class SponsorModel {
         
         return rows as Sponsor[];
     }
+}
+
+export function createSponsorModel(): SponsorModel {
+    return new SponsorModel(getDatabase());
 }

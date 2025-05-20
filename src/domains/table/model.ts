@@ -1,9 +1,9 @@
-import { getDatabase, withTransaction } from '../../shared/db';
+import { getDatabase } from '../../shared/db';
 import { Table } from "./types";
 import { Pool } from 'mysql2/promise';
 
 export class TableModel {
-    private static readonly TABLE_NAME = 'tables';
+    private static readonly TABLE_NAME = 'Tables';
     private db: Pool;
 
     constructor(db: Pool) {
@@ -24,13 +24,17 @@ export class TableModel {
         return newTable;
     }
 
-    async getTable(tableId: number): Promise<Table | undefined> {
+    async getTable(tableId: number): Promise<Table> {
         const [rows] = await this.db.query(
             `SELECT * FROM ${TableModel.TABLE_NAME} WHERE table_id = ?`,
             [tableId]
         ) as any;
         
-        return rows[0] as Table | undefined;
+        if (rows.length === 0) {
+            throw new Error('Table not found');
+        }
+        
+        return rows[0] as Table;
     }
 
     async getTablesByHall(hallId: number): Promise<Table[]> {
@@ -78,4 +82,8 @@ export class TableModel {
         
         return rows.length > 0;
     }
+}
+
+export function createTableModel(): TableModel {
+    return new TableModel(getDatabase());
 }

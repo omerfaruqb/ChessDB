@@ -2,7 +2,7 @@ import { TitleModel } from "./model";
 import { Title } from "./types";
 
 export class TitleService {
-    constructor(private titleModel: TitleModel) {
+    constructor(private readonly titleModel: TitleModel) {
         this.titleModel = titleModel;
     }
     async getTitleById(id: number): Promise<Title> {
@@ -12,4 +12,12 @@ export class TitleService {
         }
         return title;
     }
+    async getAllTitles(): Promise<Title[]> {
+        return await this.titleModel.getAllTitles();
+    }
+
+}
+
+export function createTitleService(titleModel: TitleModel): TitleService {
+    return new TitleService(titleModel);
 }

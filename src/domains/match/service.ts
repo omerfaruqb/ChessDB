@@ -1,11 +1,13 @@
 import { MatchModel } from './model';
-import { Match, MatchResult } from './types';
+import { Match } from './types';
+
 /**
  * Service for managing chess matches
  */
 export class MatchService {
 
-  constructor(private matchModel: MatchModel) {
+
+  constructor(private readonly matchModel: MatchModel) {
     this.matchModel = matchModel;
   }
 
@@ -46,3 +48,6 @@ export class MatchService {
 
 }
 
+export function createMatchService(matchModel: MatchModel): MatchService {
+  return new MatchService(matchModel);
+}

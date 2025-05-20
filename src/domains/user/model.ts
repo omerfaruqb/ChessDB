@@ -1,35 +1,6 @@
 import { Player, User, UserType, Coach, Arbiter } from "./types";
-import { Pool } from 'mysql2';
+import { Pool } from 'mysql2/promise';
 import { getDatabase } from "../../shared/db";
-
-// const mockUser: User = {
-//   username: "testuser",
-//   password: "testpassword",
-//   name: "Test",
-//   surname: "User",
-//   nationality: "Testland",
-//   userType: UserType.PLAYER,
-// };
-
-// const mockPlayer: Player = {
-//   ...mockUser,
-//   userType: UserType.PLAYER,
-//   dateOfBirth: new Date("1990-01-01"),
-//   eloRating: 1500,
-//   fideId: "1234567890",
-//   titleId: 1,
-// };
-
-// const mockCoach: Coach = {
-//   ...mockUser,
-//   userType: UserType.COACH,
-// };
-
-// const mockArbiter: Arbiter = {
-//   ...mockUser,
-//   userType: UserType.ARBITER,
-//   experienceLevel: "Expert",
-// };
 
 export class UserModel {
   private db: Pool;
@@ -38,48 +9,41 @@ export class UserModel {
     this.db = db;
   }
 
-  private query<T>(sql: string, params: any[] = []): Promise<T> {
-    return new Promise((resolve, reject) => {
-      this.db.query(sql, params, (error, results) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(results as any);
-        }
-      });
-    });
+  private async query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+    const [rows] = await this.db.query(sql, params);
+    return rows as T[];
   }
 
   async getUserByUsername(username: string): Promise<User | null> {
-    const [rows] = await this.query<any[][]>(
+    const rows = await this.query<User>(
       `SELECT * FROM users WHERE username = ?`,
       [username]
     );
-    return rows[0] as User | null;
+    return rows[0] ?? null;
   }
 
   async getPlayerByUsername(username: string): Promise<Player | null> {
-    const [rows] = await this.query<any[][]>(
+    const rows = await this.query<Player>(
       `SELECT * FROM users WHERE username = ?`,
       [username]
     );
-    return rows[0] as Player | null;
+    return rows[0] ?? null;
   }
 
   async getCoachByUsername(username: string): Promise<Coach | null> {
-    const [rows] = await this.query<any[][]>(
+    const rows = await this.query<Coach>(
       `SELECT * FROM users WHERE username = ?`,
       [username]
     );
-    return rows[0] as Coach | null;
+    return rows[0] ?? null;
   }
 
   async getArbiterByUsername(username: string): Promise<Arbiter | null> {
-    const [rows] = await this.query<any[][]>(
+    const rows = await this.query<Arbiter>(
       `SELECT * FROM users WHERE username = ?`,
       [username]
     );
-    return rows[0] as Arbiter | null;
+    return rows[0] ?? null;
   }
 }
 

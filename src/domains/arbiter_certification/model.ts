@@ -1,9 +1,9 @@
-import { getDatabase, withTransaction } from '../../shared/db';
+import { getDatabase } from '../../shared/db';
 import { ArbiterCertification } from "./types";
 import { Pool, ResultSetHeader } from 'mysql2/promise';
 
 export class ArbiterCertificationModel {
-    private static readonly TABLE_NAME = 'arbiter_certifications';
+    private static readonly TABLE_NAME = 'Arbiter_has_arbiter_cert';
     private db: Pool;
 
     constructor(db: Pool) {
@@ -12,8 +12,8 @@ export class ArbiterCertificationModel {
 
     async createCertification(certification: ArbiterCertification): Promise<ArbiterCertification> {
         const [result] = await this.db.execute<ResultSetHeader>(
-            `INSERT INTO ${ArbiterCertificationModel.TABLE_NAME} (username, certification) VALUES (?, ?)`,
-            [certification.username, certification.certification]
+            `INSERT INTO ${ArbiterCertificationModel.TABLE_NAME} (username, certification_name) VALUES (?, ?)`,
+            [certification.username, certification.certification_name]
         );
 
         if (result.affectedRows === 0) {
@@ -41,8 +41,8 @@ export class ArbiterCertificationModel {
     ): Promise<boolean> {
         const [result] = await this.db.execute<ResultSetHeader>(
             `UPDATE ${ArbiterCertificationModel.TABLE_NAME} 
-             SET certification = ? 
-             WHERE username = ? AND certification = ?`,
+             SET certification_name = ? 
+             WHERE username = ? AND certification_name = ?`,
             [newCertification, username, oldCertification]
         );
         
@@ -52,7 +52,7 @@ export class ArbiterCertificationModel {
     async deleteCertification(username: string, certification: string): Promise<boolean> {
         const [result] = await this.db.execute<ResultSetHeader>(
             `DELETE FROM ${ArbiterCertificationModel.TABLE_NAME} 
-             WHERE username = ? AND certification = ?`,
+             WHERE username = ? AND certification_name = ?`,
             [username, certification]
         );
         
@@ -66,4 +66,8 @@ export class ArbiterCertificationModel {
         
         return rows as ArbiterCertification[];
     }
+}
+
+export function createArbiterCertificationModel(): ArbiterCertificationModel {
+    return new ArbiterCertificationModel(getDatabase());
 }

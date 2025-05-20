@@ -1,18 +1,28 @@
 import { SponsorModel } from "./model";
 import { Sponsor } from "./types";
 
-
 export class SponsorService {
-    constructor(private sponsorModel: SponsorModel) {
+    constructor(private readonly sponsorModel: SponsorModel) {
         this.sponsorModel = sponsorModel;
     }
+
     async getSponsorById(id: number): Promise<Sponsor> {
-        return this.sponsorModel.getSponsorById(id);
+        return await this.sponsorModel.getSponsor(id);
     }
     async getAllSponsors(): Promise<Sponsor[]> {
-        return this.sponsorModel.getAllSponsors();
+        return await this.sponsorModel.getAllSponsors();
     }
     async createSponsor(sponsor: Sponsor): Promise<Sponsor> {
-        return this.sponsorModel.createSponsor(sponsor);
+        return await this.sponsorModel.createSponsor(sponsor);
     }
+    async updateSponsor(id: number, sponsor: Sponsor): Promise<boolean> {
+        return await this.sponsorModel.updateSponsor(id, sponsor);
+    }
+    async deleteSponsor(id: number): Promise<boolean> {
+        return await this.sponsorModel.deleteSponsor(id);
+    }
+}
+
+export function createSponsorService(sponsorModel: SponsorModel): SponsorService {
+    return new SponsorService(sponsorModel);
 }
