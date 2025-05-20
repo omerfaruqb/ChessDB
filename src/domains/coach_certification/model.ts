@@ -1,20 +1,22 @@
 import { CoachCertification } from "./types";
-import { getDatabase } from "../../shared/db";
-import { Pool } from 'mysql2/promise';
-
+import { Pool, ResultSetHeader } from "mysql2/promise";
 export class CoachCertificationModel {
-    private static readonly TABLE_NAME = 'coach_certifications';
+    private static readonly TABLE_NAME = 'CoachCertification';
     private db: Pool;
 
-    constructor() {
-        this.db = getDatabase();
+    constructor(db: Pool) {
+        this.db = db;
     }
 
     async createCoachCertification(coachCertification: CoachCertification): Promise<CoachCertification> {
-        const [result] = await this.db.execute(
-            `INSERT INTO ${CoachCertificationModel.TABLE_NAME} (username, certification) VALUES (?, ?)`,
-            [coachCertification.username, coachCertification.certification]
+        const [result] = await this.db.execute<ResultSetHeader>(
+            `INSERT INTO ${CoachCertificationModel.TABLE_NAME} (username, certification_name) VALUES (?, ?)`,
+            [coachCertification.username, coachCertification.certification_name]
         );
+
+        if (result.affectedRows === 0) {
+            throw new Error('Failed to create coach certification');
+        }
         
         return {
             ...coachCertification
@@ -26,8 +28,8 @@ export class CoachCertificationModel {
             `SELECT * FROM ${CoachCertificationModel.TABLE_NAME} WHERE username = ?`,
             [username]
         );
-        
-        return rows as CoachCertification[];
+       
+        return (rows as any[]) as CoachCertification[];
     }
 
     async updateCoachCertification(
@@ -37,8 +39,8 @@ export class CoachCertificationModel {
     ): Promise<boolean> {
         const [result] = await this.db.execute(
             `UPDATE ${CoachCertificationModel.TABLE_NAME} 
-             SET certification = ? 
-             WHERE username = ? AND certification = ?`,
+             SET certification_name = ? 
+             WHERE username = ? AND certification_name = ?`,
             [newCertification, username, oldCertification]
         );
         
@@ -48,7 +50,7 @@ export class CoachCertificationModel {
     async deleteCoachCertification(username: string, certification: string): Promise<boolean> {
         const [result] = await this.db.execute(
             `DELETE FROM ${CoachCertificationModel.TABLE_NAME} 
-             WHERE username = ? AND certification = ?`,
+             WHERE username = ? AND certification_name = ?`,
             [username, certification]
         );
         

@@ -1,9 +1,8 @@
 import { getDatabase, withTransaction } from '../../shared/db';
 import { Hall } from "./types";
-import { Pool } from 'mysql2/promise';
 
 export class HallModel {
-    private db: Pool;
+    private db: ReturnType<typeof getDatabase>;
 
     constructor() {
         this.db = getDatabase();
