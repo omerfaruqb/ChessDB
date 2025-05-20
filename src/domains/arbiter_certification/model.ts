@@ -1,4 +1,4 @@
-import { getDatabase, withTransaction } from '../../shared/db';
+import { getDatabase } from '../../shared/db';
 import { ArbiterCertification } from "./types";
 import { Pool, ResultSetHeader } from 'mysql2/promise';
 
@@ -66,4 +66,8 @@ export class ArbiterCertificationModel {
         
         return rows as ArbiterCertification[];
     }
+}
+
+export function createArbiterCertificationModel(): ArbiterCertificationModel {
+    return new ArbiterCertificationModel(getDatabase());
 }

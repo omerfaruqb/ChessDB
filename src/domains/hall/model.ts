@@ -1,4 +1,4 @@
-import { withTransaction } from '../../shared/db';
+import { getDatabase, withTransaction } from '../../shared/db';
 import { Hall } from "./types";
 import { Pool } from 'mysql2/promise';
 
@@ -110,4 +110,8 @@ export class HallModel {
             throw error;
         }
     }
+}
+
+export function createHallModel(): HallModel {
+    return new HallModel(getDatabase());
 }

@@ -1,5 +1,6 @@
 import { CoachCertification } from "./types";
 import { Pool, ResultSetHeader } from "mysql2/promise";
+import { getDatabase } from "@/shared/db";
 export class CoachCertificationModel {
     private static readonly TABLE_NAME = 'CoachCertification';
     private db: Pool;
@@ -64,4 +65,8 @@ export class CoachCertificationModel {
         
         return rows as CoachCertification[];
     }
+}
+
+export function createCoachCertificationModel(): CoachCertificationModel {
+    return new CoachCertificationModel(getDatabase());
 }

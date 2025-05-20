@@ -58,3 +58,7 @@ export class TitleModel {
         return rows[0] as Title | undefined;
     }
 }
+
+export function createTitleModel(): TitleModel {
+    return new TitleModel(getDatabase());
+}

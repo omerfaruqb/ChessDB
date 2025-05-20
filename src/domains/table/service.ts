@@ -1,12 +1,9 @@
 import { TableModel } from "./model";
 import { Table } from "./types";
-import { getDatabase } from "../../shared/db";
 
 export class TableService {
-    private readonly tableModel: TableModel;
-
-    constructor() {
-        this.tableModel = new TableModel(getDatabase());
+    constructor(private readonly tableModel: TableModel) {
+        this.tableModel = tableModel;
     }
     async getTable(id: number): Promise<Table> {
         return await this.tableModel.getTable(id);

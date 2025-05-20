@@ -82,3 +82,7 @@ export class SponsorModel {
         return rows as Sponsor[];
     }
 }
+
+export function createSponsorModel(): SponsorModel {
+    return new SponsorModel(getDatabase());
+}

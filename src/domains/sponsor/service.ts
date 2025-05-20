@@ -1,12 +1,9 @@
 import { SponsorModel } from "./model";
 import { Sponsor } from "./types";
-import { getDatabase } from "../../shared/db";
 
 export class SponsorService {
-    private readonly sponsorModel: SponsorModel;
-
-    constructor() {
-        this.sponsorModel = new SponsorModel(getDatabase());
+    constructor(private readonly sponsorModel: SponsorModel) {
+        this.sponsorModel = sponsorModel;
     }
 
     async getSponsorById(id: number): Promise<Sponsor> {

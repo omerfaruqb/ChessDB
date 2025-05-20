@@ -153,3 +153,7 @@ export class TeamModel {
         return rows as PlayerTeam[];
     }
 }
+
+export function createTeamModel(): TeamModel {
+    return new TeamModel(getDatabase());
+}

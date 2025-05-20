@@ -3,10 +3,8 @@ import {ArbiterCertification } from "./types";
 import { getDatabase } from "../../shared/db";
 
 export class ArbiterCertificationService {
-    private readonly arbiterCertificationModel: ArbiterCertificationModel;
-
-    constructor() {
-        this.arbiterCertificationModel = new ArbiterCertificationModel(getDatabase());
+    constructor(private readonly arbiterCertificationModel: ArbiterCertificationModel) {
+        this.arbiterCertificationModel = arbiterCertificationModel;
     }
 
     async createCertification(certification: ArbiterCertification): Promise<ArbiterCertification> {

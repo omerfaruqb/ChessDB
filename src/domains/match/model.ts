@@ -1,6 +1,6 @@
 import { Match } from "./types";    
 import { Pool } from 'mysql2/promise';
-
+import { getDatabase } from "@/shared/db";
 export class MatchModel {
     private static readonly TABLE_NAME = 'matches';
     private db: Pool;
@@ -103,4 +103,8 @@ export class MatchModel {
         
         return rows as Match[];
     }
+}
+
+export function createMatchModel(): MatchModel {
+    return new MatchModel(getDatabase());
 }

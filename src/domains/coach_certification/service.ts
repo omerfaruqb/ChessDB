@@ -1,12 +1,10 @@
 import { CoachCertificationModel } from "./model";
 import { CoachCertification } from "./types";
-import { getDatabase } from "../../shared/db";
 
 export class CoachCertificationService {
-    private readonly coachCertificationModel: CoachCertificationModel;
 
-    constructor() {
-        this.coachCertificationModel = new CoachCertificationModel(getDatabase());
+    constructor(private readonly coachCertificationModel: CoachCertificationModel) {
+        this.coachCertificationModel = coachCertificationModel;
     }
 
     async createCertification(certification: CoachCertification): Promise<CoachCertification> {

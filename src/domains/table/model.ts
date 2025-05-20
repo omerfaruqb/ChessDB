@@ -83,3 +83,7 @@ export class TableModel {
         return rows.length > 0;
     }
 }
+
+export function createTableModel(): TableModel {
+    return new TableModel(getDatabase());
+}
