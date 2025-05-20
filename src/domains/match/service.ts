@@ -34,8 +34,8 @@ export class MatchService {
     return this.matchModel.getMatch(id);
   }
 
-  async getMatchesByPlayer(playerId: number): Promise<Match[]> {
-    return this.matchModel.getMatchesByPlayer(playerId);
+  async getMatchesByPlayer(playerUsername: string): Promise<Match[]> {
+    return this.matchModel.getMatchesByPlayer(playerUsername);
   }
 
   async getMatchesByTeam(teamId: number): Promise<Match[]> {

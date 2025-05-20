@@ -22,11 +22,11 @@ export class TeamService {
     async getPlayersOfTeam(teamId: number): Promise<PlayerTeam[]> {
         return this.teamModel.getPlayersOfTeam(teamId);
     }
-    async addPlayerToTeam(playerId: number, teamId: number): Promise<boolean> {
-        return this.teamModel.addPlayerToTeam(playerId, teamId);
+    async addPlayerToTeam(teamId: number, playerUsername: string): Promise<boolean> {
+        return this.teamModel.addPlayerToTeam(teamId, playerUsername);
     }
-    async removePlayerFromTeam(playerId: number, teamId: number): Promise<boolean> {
-        return this.teamModel.removePlayerFromTeam(playerId, teamId);
+    async removePlayerFromTeam(teamId: number, playerUsername: string): Promise<boolean> {
+        return this.teamModel.removePlayerFromTeam(teamId, playerUsername);
     }
     async createTeam(team: Team): Promise<Team> {
         return await this.teamModel.createTeam(team);
@@ -40,8 +40,8 @@ export class TeamService {
     async getAllTeams(): Promise<Team[]> {
         return await this.teamModel.getAllTeams();
     }
-    async getTeamPlayers(teamId: number): Promise<number[]> {
-        return await this.teamModel.getTeamPlayersIds(teamId);
+    async getTeamPlayers(teamId: number): Promise<string[]> {
+        return await this.teamModel.getTeamPlayersUsernames(teamId);
     }
     async getPlayerTeams(playerUsername: string): Promise<Team[]> {
         return await this.teamModel.getPlayerTeams(playerUsername);
