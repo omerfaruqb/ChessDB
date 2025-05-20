@@ -5,7 +5,7 @@ export interface Team {
   };
 
 export interface PlayerTeam {
-  player_id: number;
+  username: string;
   team_id: number;
   };
 

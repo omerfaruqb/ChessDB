@@ -4,7 +4,7 @@ import { Pool } from 'mysql2/promise';
 
 export class HallModel {
     private db: Pool;
-    private static readonly TABLE_NAME = 'Halls';
+    private static readonly TABLE_NAME = 'halls';
 
     constructor(db: Pool) {
         this.db = db;

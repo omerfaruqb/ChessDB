@@ -2,7 +2,7 @@ import { CoachCertification } from "./types";
 import { Pool, ResultSetHeader } from "mysql2/promise";
 import { getDatabase } from "@/shared/db";
 export class CoachCertificationModel {
-    private static readonly TABLE_NAME = 'CoachCertification';
+    private static readonly TABLE_NAME = 'coach_has_certification';
     private db: Pool;
 
     constructor(db: Pool) {

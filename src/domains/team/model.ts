@@ -97,11 +97,11 @@ export class TeamModel {
         return rows as Team[];
     }
     
-    async addPlayerToTeam(teamId: number, playerId: number): Promise<boolean> {
+    async addPlayerToTeam(teamId: number, username: string): Promise<boolean> {
         try {
             await this.db.execute(
-                `INSERT INTO ${TeamModel.PLAYER_TEAM_TABLE} (team_id, player_id) VALUES (?, ?)`,
-                [teamId, playerId]
+                `INSERT INTO ${TeamModel.PLAYER_TEAM_TABLE} (team_id, username) VALUES (?, ?)`,
+                [teamId, username]
             );
             return true;
         } catch (error) {
@@ -112,32 +112,32 @@ export class TeamModel {
         }
     }
     
-    async removePlayerFromTeam(teamId: number, playerId: number): Promise<boolean> {
+    async removePlayerFromTeam(teamId: number, username: string): Promise<boolean> {
         const [result] = await this.db.execute(
             `DELETE FROM ${TeamModel.PLAYER_TEAM_TABLE} 
-             WHERE team_id = ? AND player_id = ?`,
-            [teamId, playerId]
+             WHERE team_id = ? AND username = ?`,
+            [teamId, username]
         ) as any;
         
         return result.affectedRows > 0;
     }
     
-    async getTeamPlayersIds(teamId: number): Promise<number[]> {
+    async getTeamPlayersUsernames(teamId: number): Promise<string[]> {
         const [rows] = await this.db.query(
-            `SELECT player_id FROM ${TeamModel.PLAYER_TEAM_TABLE} 
+            `SELECT username FROM ${TeamModel.PLAYER_TEAM_TABLE} 
              WHERE team_id = ?`,
             [teamId]
         ) as any;   
         
-        return rows.map((row: any) => row.player_id);
+        return rows.map((row: any) => row.username);
     }
     
-    async getPlayerTeams(playerId: number): Promise<Team[]> {
+    async getPlayerTeams(username: string): Promise<Team[]> {
         const [rows] = await this.db.query(
             `SELECT t.* FROM ${TeamModel.TABLE_NAME} t
              JOIN ${TeamModel.PLAYER_TEAM_TABLE} pt ON t.team_id = pt.team_id
-             WHERE pt.player_id = ?`,
-            [playerId]
+             WHERE pt.username = ?`,
+            [username]
         ) as any;
         
         return rows as Team[];
@@ -145,7 +145,7 @@ export class TeamModel {
 
     async getPlayersOfTeam(teamId: number): Promise<PlayerTeam[]> {
         const [rows] = await this.db.query(
-            `SELECT pt.player_id FROM ${TeamModel.PLAYER_TEAM_TABLE} pt
+            `SELECT pt.username FROM ${TeamModel.PLAYER_TEAM_TABLE} pt
              WHERE pt.team_id = ?`,
             [teamId]
         ) as any;
