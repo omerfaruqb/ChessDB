@@ -1,40 +1,84 @@
-  import { NextResponse } from 'next/server';
-  import type { NextRequest } from 'next/server';
-  import jwt from 'jsonwebtoken';
-  import { UserType } from '@/domains/user/types';
+import { NextRequest, NextResponse } from 'next/server';
+import { UserType } from '@/domains/user/types';
 
-  const JWT_SECRET = process.env.JWT_SECRET || "secret";
-
-  interface JwtPayload {
+export interface AuthResult {
+  isAuthenticated: boolean;
+  user?: {
     username: string;
     userType: UserType;
-  }
+  };
+  error?: string;
+}
 
-  export function verifyAuth(request: NextRequest) {
-    const token = request.headers.get('authorization')?.replace('Bearer ', '');
-    
-    if (!token) {
+export function verifyAuth(request: NextRequest): AuthResult {
+  try {
+    const authCookie = request.cookies.get('auth_session');
+
+    if (!authCookie || !authCookie.value) {
       return {
         isAuthenticated: false,
-        error: 'No token provided'
+        error: 'No authentication session found'
       };
     }
 
     try {
-      const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+      const sessionData = JSON.parse(authCookie.value);
+      const { username, userType } = sessionData;
+
+      if (!username || !userType) {
+        return {
+          isAuthenticated: false,
+          error: 'Invalid session data'
+        };
+      }
+
+      // Validate userType is a valid enum value
+      if (!Object.values(UserType).includes(userType)) {
+        return {
+          isAuthenticated: false,
+          error: 'Invalid user type'
+        };
+      }
+
       return {
         isAuthenticated: true,
-        user: decoded
+        user: {
+          username,
+          userType
+        }
       };
-    } catch (error) {
+    } catch (parseError) {
       return {
         isAuthenticated: false,
-        error: 'Invalid token'
+        error: 'Invalid session format'
       };
     }
+  } catch (error) {
+    console.error('Auth verification error:', error);
+    return {
+      isAuthenticated: false,
+      error: 'Authentication verification failed'
+    };
   }
+}
 
-  export function requireAuth(handler: Function) {
+export function requireAuth(handler: Function) {
+  return async function(request: NextRequest) {
+    const auth = verifyAuth(request);
+    
+    if (!auth.isAuthenticated) {
+      return NextResponse.json(
+        { error: auth.error },
+        { status: 401 }
+      );
+    }
+    
+    return handler(request, auth.user);
+  };
+}
+
+export function requireRole(allowedRoles: UserType[]) {
+  return function(handler: Function) {
     return async function(request: NextRequest) {
       const auth = verifyAuth(request);
       
@@ -44,31 +88,15 @@
           { status: 401 }
         );
       }
+
+      if (!allowedRoles.includes(auth.user!.userType)) {
+        return NextResponse.json(
+          { error: 'Insufficient permissions' },
+          { status: 403 }
+        );
+      }
       
       return handler(request, auth.user);
     };
-  }
-
-  export function requireRole(allowedRoles: UserType[]) {
-    return function(handler: Function) {
-      return async function(request: NextRequest) {
-        const auth = verifyAuth(request);
-        
-        if (!auth.isAuthenticated) {
-          return NextResponse.json(
-            { error: auth.error },
-            { status: 401 }
-          );
-        }
-
-        if (!allowedRoles.includes(auth.user!.userType)) {
-          return NextResponse.json(
-            { error: 'Insufficient permissions' },
-            { status: 403 }
-          );
-        }
-        
-        return handler(request, auth.user);
-      };
-    };
-  } 
+  };
+} 
