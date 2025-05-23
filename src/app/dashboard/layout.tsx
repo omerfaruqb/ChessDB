@@ -15,6 +15,7 @@ const navLinks = {
   [UserType.COACH]: [
     { label: 'My Profile', href: '/dashboard/profile' },
     { label: 'My Team', href: '/dashboard/team' },
+    { label: 'My Matches', href: '/dashboard/matches' },
     { label: 'Create Match', href: '/dashboard/matches/create' },
     { label: 'Assign Players', href: '/dashboard/matches/assign' },
     { label: 'View Halls', href: '/dashboard/halls' },

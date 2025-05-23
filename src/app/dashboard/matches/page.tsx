@@ -162,8 +162,12 @@ export default function MatchesPage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {matches.map((match) => {
                   const matchDate = new Date(match.date);
-                  const isPastMatch = matchDate < new Date();
-                  const canDelete = isCoach && !isPastMatch;
+                  const currentDate = new Date();
+                  const isPastMatch = matchDate < currentDate;
+                  const hasResult = !!match.match_result;
+                  
+                  // Allow coaches to delete ANY match
+                  const canDelete = isCoach;
                   
                   return (
                     <tr key={match.match_id} className="hover:bg-gray-50">
@@ -207,17 +211,13 @@ export default function MatchesPage() {
                       </td>
                       {isCoach && (
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          {canDelete ? (
-                            <button
-                              onClick={() => handleDeleteMatch(match.match_id)}
-                              className="text-red-600 hover:text-red-900 disabled:text-red-300"
-                              disabled={deleteLoading === match.match_id.toString()}
-                            >
-                              {deleteLoading === match.match_id.toString() ? 'Deleting...' : 'Delete'}
-                            </button>
-                          ) : (
-                            <span className="text-gray-400">Cannot delete past matches</span>
-                          )}
+                          <button
+                            onClick={() => handleDeleteMatch(match.match_id)}
+                            className="text-red-600 hover:text-red-900 disabled:text-red-300"
+                            disabled={deleteLoading === match.match_id.toString()}
+                          >
+                            {deleteLoading === match.match_id.toString() ? 'Deleting...' : 'Delete'}
+                          </button>
                         </td>
                       )}
                     </tr>
