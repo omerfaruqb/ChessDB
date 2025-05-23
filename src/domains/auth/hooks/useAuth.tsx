@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import { User, Player, Coach, Arbiter, Manager, UserType } from '@/domains/user/types';
 
 // Define a type that encompasses all possible user types
@@ -28,6 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   // Check if user is already logged in
   useEffect(() => {
@@ -101,7 +103,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       
       setUser(null);
-      console.log('User logged out');
+      console.log('User logged out, redirecting to login');
+      router.push('/login');
     } catch (err) {
       console.error('Logout failed:', err);
     } finally {

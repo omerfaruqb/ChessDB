@@ -39,14 +39,30 @@ export default function CreateUser() {
     const fetchTitles = async () => {
       try {
         setLoading(true);
+        setError(''); // Clear any previous errors
         const res = await fetch('/api/titles');
-        const data = await res.json();
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        let data;
+        try {
+          data = await res.json();
+        } catch (jsonError) {
+          console.error('JSON parsing error:', jsonError);
+          setError('Invalid response format when fetching titles');
+          return;
+        }
         
         if (data.success) {
-          setTitles(data.titles);
+          setTitles(data.titles || []);
+        } else {
+          setError(data.message || 'Failed to fetch titles');
         }
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching titles:', err);
+        setError('Failed to load titles. Please refresh the page.');
       } finally {
         setLoading(false);
       }
@@ -91,12 +107,12 @@ export default function CreateUser() {
         userData.dateOfBirth = dateOfBirth;
         userData.fideId = fideId;
         userData.eloRating = parseInt(eloRating);
-        userData.titleId = parseInt(titleId);
+        userData.titleId = titleId ? parseInt(titleId) : null;
       } else if (userType === UserType.ARBITER) {
         userData.experienceLevel = experienceLevel;
       }
       
-      const res = await fetch('/api/users', {
+      const res = await fetch('/api/users/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -104,7 +120,14 @@ export default function CreateUser() {
         body: JSON.stringify(userData),
       });
       
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (jsonError) {
+        console.error('JSON parsing error:', jsonError);
+        setError('Invalid response format from server');
+        return;
+      }
       
       if (data.success) {
         setSuccess(`${userType.toLowerCase()} created successfully`);
@@ -120,8 +143,18 @@ export default function CreateUser() {
     }
   };
   
-  if (loading && !titles.length) {
-    return <div className="p-4">Loading...</div>;
+  if (loading) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6">Create New User</h1>
+        <div className="bg-white shadow rounded-lg p-6">
+          <div className="flex items-center justify-center h-32">
+            <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <span className="ml-3 text-gray-600">Loading titles...</span>
+          </div>
+        </div>
+      </div>
+    );
   }
   
   return (
@@ -261,9 +294,8 @@ export default function CreateUser() {
                   value={titleId}
                   onChange={(e) => setTitleId(e.target.value)}
                   className="w-full px-3 py-2 border rounded-md"
-                  required
                 >
-                  <option value="">Select a title</option>
+                  <option value="">Select a title (optional)</option>
                   {titles.map((title) => (
                     <option key={title.title_id} value={title.title_id}>
                       {title.title_name}

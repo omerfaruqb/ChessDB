@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDatabase } from '@/shared/db';
+import { titleService } from '@/domains/title/controller';
 import { cookies } from 'next/headers';
 
 export async function GET(request: NextRequest) {
@@ -15,33 +15,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const db = getDatabase();
-    
-    // Get all halls with their table counts
-    const [halls] = await db.query(`
-      SELECT 
-        h.hall_id,
-        h.hall_name,
-        h.hall_country,
-        h.hall_capacity,
-        COUNT(t.table_id) as table_count
-      FROM halls h
-      LEFT JOIN tables t ON h.hall_id = t.hall_id
-      GROUP BY h.hall_id, h.hall_name, h.hall_country, h.hall_capacity
-      ORDER BY h.hall_name
-    `);
+    // Get all titles
+    const titles = await titleService.getAllTitles();
 
     return NextResponse.json({
       success: true,
-      halls: halls
+      titles: titles
     });
 
   } catch (error: any) {
-    console.error('Get halls error:', error);
+    console.error('Get titles error:', error);
     return NextResponse.json(
       { 
         success: false, 
-        message: 'An error occurred while fetching halls' 
+        message: 'An error occurred while fetching titles' 
       },
       { status: 500 }
     );

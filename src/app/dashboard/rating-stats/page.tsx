@@ -91,7 +91,7 @@ export default function RatingStats() {
         <div className="bg-white shadow rounded-lg p-6 flex flex-col items-center">
           <h2 className="text-lg font-semibold mb-2">Average Rating</h2>
           <p className="text-4xl font-bold text-purple-600">
-            {stats?.average_rating !== null ? stats?.average_rating.toFixed(1) : '-'}
+            {stats?.average_rating !== null ? Number(stats?.average_rating).toFixed(1) : '-'}
           </p>
           <p className="text-gray-500 text-sm mt-2">Your average match rating</p>
         </div>

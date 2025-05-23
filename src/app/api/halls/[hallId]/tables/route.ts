@@ -9,8 +9,9 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { hallId: string } }
 ) {
+  const resolvedParams = await params;
   try {
-    const hallId = parseInt(params.hallId);
+    const hallId = parseInt(resolvedParams.hallId);
     
     if (isNaN(hallId)) {
       return NextResponse.json(
@@ -42,7 +43,7 @@ export async function GET(
       tables
     });
   } catch (error) {
-    console.error(`Error fetching tables for hall ID ${params.hallId}:`, error);
+    console.error(`Error fetching tables for hall ID ${resolvedParams.hallId}:`, error);
     return NextResponse.json(
       { success: false, message: 'Failed to fetch tables' },
       { status: 500 }

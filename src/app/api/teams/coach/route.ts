@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from '@/shared/db';
+import { UserType } from '@/domains/user/types';
 import { cookies } from 'next/headers';
 
 export async function GET(request: NextRequest) {
@@ -15,33 +16,39 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const sessionData = JSON.parse(authSession.value);
+    if (sessionData.userType !== UserType.COACH) {
+      return NextResponse.json(
+        { success: false, message: 'Only coaches can access their team' },
+        { status: 403 }
+      );
+    }
+
     const db = getDatabase();
     
-    // Get all halls with their table counts
-    const [halls] = await db.query(`
+    // Get the coach's team
+    const [teams] = await db.query(`
       SELECT 
-        h.hall_id,
-        h.hall_name,
-        h.hall_country,
-        h.hall_capacity,
-        COUNT(t.table_id) as table_count
-      FROM halls h
-      LEFT JOIN tables t ON h.hall_id = t.hall_id
-      GROUP BY h.hall_id, h.hall_name, h.hall_country, h.hall_capacity
-      ORDER BY h.hall_name
-    `);
+        team_id,
+        team_name,
+        coach_username
+      FROM teams
+      WHERE coach_username = ?
+    `, [sessionData.username]);
+
+    const team = Array.isArray(teams) && teams.length > 0 ? teams[0] : null;
 
     return NextResponse.json({
       success: true,
-      halls: halls
+      team: team
     });
 
   } catch (error: any) {
-    console.error('Get halls error:', error);
+    console.error('Get coach team error:', error);
     return NextResponse.json(
       { 
         success: false, 
-        message: 'An error occurred while fetching halls' 
+        message: 'An error occurred while fetching coach team' 
       },
       { status: 500 }
     );

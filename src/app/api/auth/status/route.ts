@@ -1,75 +1,71 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createAuthService } from '@/domains/auth/service';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // Get the auth session cookie
     const cookieStore = await cookies();
     const authSession = cookieStore.get('auth_session');
-    
-    console.log('Auth session cookie found:', !!authSession);
-    if (authSession) {
-      console.log('Cookie value:', authSession.value);
-    }
-    
-    if (!authSession || !authSession.value) {
-      console.log('No auth session cookie found');
+
+    if (!authSession) {
       return NextResponse.json({
         isAuthenticated: false,
         user: null
       });
     }
-    
+
     try {
-      // Parse session data
       const sessionData = JSON.parse(authSession.value);
-      console.log('Session data parsed:', sessionData);
-      
       const { username, userType } = sessionData;
-      
+
       if (!username || !userType) {
-        console.log('Missing username or userType in session');
         return NextResponse.json({
           isAuthenticated: false,
           user: null
         });
       }
-      
-      // Use AuthService to get user details
+
+      // Get the full user data from the database
       const authService = createAuthService();
-      const userDetails = await authService.getUserByUsername(username);
-      
-      if (!userDetails) {
-        console.log('User details not found for username:', username);
-        throw new Error('User details not found');
+      const user = await authService.getUserByUsername(username);
+
+      if (!user) {
+        // User no longer exists, clear the session
+        const response = NextResponse.json({
+          isAuthenticated: false,
+          user: null
+        });
+        response.cookies.delete('auth_session');
+        return response;
       }
-      
-      console.log('User authenticated:', username);
-      
+
       return NextResponse.json({
         isAuthenticated: true,
-        user: userDetails
+        user: {
+          username: user.username,
+          name: user.name,
+          surname: user.surname,
+          nationality: user.nationality,
+          userType: user.userType
+        }
       });
-    } catch (err) {
-      console.error('Session parsing error:', err);
-      
+    } catch (parseError) {
+      console.error('Error parsing session data:', parseError);
       // Clear invalid session
-      const cookieStore = await cookies();
-      cookieStore.delete('auth_session');
-      
-      return NextResponse.json({
+      const response = NextResponse.json({
         isAuthenticated: false,
         user: null
       });
+      response.cookies.delete('auth_session');
+      return response;
     }
   } catch (error) {
-    console.error('Auth status error:', error);
+    console.error('Auth status check error:', error);
     return NextResponse.json(
       { 
         isAuthenticated: false, 
         user: null,
-        message: 'An error occurred while checking authentication status' 
+        error: 'Internal server error' 
       },
       { status: 500 }
     );

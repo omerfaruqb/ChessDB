@@ -8,7 +8,7 @@ export async function GET(
   { params }: { params: { hallId: string } }
 ) {
   try {
-    const hallId = parseInt(params.hallId);
+    const hallId = await parseInt(params.hallId);
     
     if (isNaN(hallId)) {
       return NextResponse.json(
@@ -47,7 +47,7 @@ export async function PUT(
   { params }: { params: { hallId: string } }
 ) {
   try {
-    const hallId = parseInt(params.hallId);
+    const hallId = await parseInt(params.hallId);
     
     if (isNaN(hallId)) {
       return NextResponse.json(

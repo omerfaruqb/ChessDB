@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS users;
 -- Then follow with your CREATE TABLE statements
 CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) PRIMARY KEY,
-    password VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     name VARCHAR(50),
     surname VARCHAR(50),
     nationality VARCHAR(50),
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS tournaments (
 );
 
 CREATE TABLE IF NOT EXISTS matches (
-    match_id INT PRIMARY KEY,
+    match_id INT AUTO_INCREMENT PRIMARY KEY,
     date DATE NOT NULL,
     time_slot INT NOT NULL CHECK (time_slot BETWEEN 1 AND 3),
     hall_id INT NOT NULL,

@@ -15,6 +15,8 @@ export default function CreateMatch() {
   const [tableId, setTableId] = useState('');
   const [team2Id, setTeam2Id] = useState('');
   const [arbiterUsername, setArbiterUsername] = useState('');
+  const [whitePlayerUsername, setWhitePlayerUsername] = useState('');
+  const [blackPlayerUsername, setBlackPlayerUsername] = useState('');
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -23,6 +25,8 @@ export default function CreateMatch() {
   const [teams, setTeams] = useState<any[]>([]);
   const [arbiters, setArbiters] = useState<any[]>([]);
   const [userTeam, setUserTeam] = useState<any>(null);
+  const [userTeamPlayers, setUserTeamPlayers] = useState<any[]>([]);
+  const [opponentTeamPlayers, setOpponentTeamPlayers] = useState<any[]>([]);
   
   // Redirect if not a coach
   useEffect(() => {
@@ -44,6 +48,15 @@ export default function CreateMatch() {
         const teamData = await teamRes.json();
         if (teamData.success) {
           setUserTeam(teamData.team);
+        }
+        
+        // Get user team players
+        if (teamData.success) {
+          const playersRes = await fetch('/api/teams/coach/players');
+          const playersData = await playersRes.json();
+          if (playersData.success) {
+            setUserTeamPlayers(playersData.players);
+          }
         }
         
         // Get halls
@@ -102,11 +115,47 @@ export default function CreateMatch() {
     fetchTables();
   }, [hallId]);
   
+  // Get players for selected opponent team
+  useEffect(() => {
+    if (!team2Id) {
+      setOpponentTeamPlayers([]);
+      return;
+    }
+    
+    const fetchOpponentPlayers = async () => {
+      try {
+        const res = await fetch(`/api/teams/${team2Id}/players`);
+        const data = await res.json();
+        if (data.success) {
+          setOpponentTeamPlayers(data.players);
+        } else {
+          setError('Failed to load opponent team players');
+        }
+      } catch (err) {
+        setError('Failed to load opponent team players');
+        console.error(err);
+      }
+    };
+    
+    fetchOpponentPlayers();
+  }, [team2Id]);
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!userTeam) {
       setError('You must be assigned to a team to create a match');
+      return;
+    }
+    
+    // Validate required fields
+    if (!date || !timeSlot || !hallId || !tableId || !userTeam.team_id || !team2Id || !arbiterUsername) {
+      return;
+    }
+    
+    // Validate player selection
+    if (!whitePlayerUsername || !blackPlayerUsername) {
+      setError('Please select both white and black players');
       return;
     }
     
@@ -126,6 +175,8 @@ export default function CreateMatch() {
           table_id: parseInt(tableId),
           team1_id: userTeam.team_id,
           team2_id: parseInt(team2Id),
+          white_player_username: whitePlayerUsername,
+          black_player_username: blackPlayerUsername,
           arbiter_username: arbiterUsername
         }),
       });
@@ -152,6 +203,17 @@ export default function CreateMatch() {
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Create New Match</h1>
+      
+      {/* Explanation Section */}
+      <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
+        <h2 className="text-lg font-semibold text-gray-800 mb-2">How Player Assignment Works</h2>
+        <div className="text-sm text-gray-600 space-y-2">
+          <p>• <strong>You choose the players:</strong> Select one player from your team and one from the opponent team</p>
+          <p>• <strong>White vs Black:</strong> The white player gets the first move advantage in chess</p>
+          <p>• <strong>Strategy matters:</strong> Consider each player's ELO rating when making assignments</p>
+          <p>• <strong>Your control:</strong> Unlike before, you now have full control over who plays in each match</p>
+        </div>
+      </div>
       
       {error && (
         <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
@@ -257,6 +319,69 @@ export default function CreateMatch() {
           </select>
         </div>
         
+        {/* Player Selection Section */}
+        <div className="border-t pt-6">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Player Assignment</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                White Player (from {userTeam?.team_name || 'your team'})
+              </label>
+              <select
+                value={whitePlayerUsername}
+                onChange={(e) => setWhitePlayerUsername(e.target.value)}
+                className="w-full px-3 py-2 border rounded-md"
+                required
+                disabled={!userTeam || userTeamPlayers.length === 0}
+              >
+                <option value="">Select white player</option>
+                {userTeamPlayers.map((player) => (
+                  <option key={player.username} value={player.username}>
+                    {player.name} {player.surname} (ELO: {player.elo_rating})
+                  </option>
+                ))}
+              </select>
+              {userTeamPlayers.length === 0 && userTeam && (
+                <p className="text-sm text-gray-500 mt-1">No players found for your team</p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Black Player (from {teams.find(t => t.team_id.toString() === team2Id)?.team_name || 'opponent team'})
+              </label>
+              <select
+                value={blackPlayerUsername}
+                onChange={(e) => setBlackPlayerUsername(e.target.value)}
+                className="w-full px-3 py-2 border rounded-md"
+                required
+                disabled={!team2Id || opponentTeamPlayers.length === 0}
+              >
+                <option value="">Select black player</option>
+                {opponentTeamPlayers.map((player) => (
+                  <option key={player.username} value={player.username}>
+                    {player.name} {player.surname} (ELO: {player.elo_rating})
+                  </option>
+                ))}
+              </select>
+              {opponentTeamPlayers.length === 0 && team2Id && (
+                <p className="text-sm text-gray-500 mt-1">Loading opponent team players...</p>
+              )}
+              {!team2Id && (
+                <p className="text-sm text-gray-500 mt-1">Select opponent team first</p>
+              )}
+            </div>
+          </div>
+          
+          <div className="mt-4 p-4 bg-blue-50 rounded-md">
+            <p className="text-sm text-blue-700">
+              <strong>Note:</strong> White and black piece assignment is traditional in chess. 
+              The white player gets the first move advantage.
+            </p>
+          </div>
+        </div>
+        
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Arbiter</label>
           <select
@@ -268,7 +393,7 @@ export default function CreateMatch() {
             <option value="">Select an arbiter</option>
             {arbiters.map((arbiter) => (
               <option key={arbiter.username} value={arbiter.username}>
-                {arbiter.name} {arbiter.surname} (Experience: {arbiter.experienceLevel})
+                {arbiter.name} {arbiter.surname} (Experience: {arbiter.experience_level})
               </option>
             ))}
           </select>

@@ -17,31 +17,30 @@ export async function GET(request: NextRequest) {
 
     const db = getDatabase();
     
-    // Get all halls with their table counts
-    const [halls] = await db.query(`
+    // Get all arbiters
+    const [arbiters] = await db.query(`
       SELECT 
-        h.hall_id,
-        h.hall_name,
-        h.hall_country,
-        h.hall_capacity,
-        COUNT(t.table_id) as table_count
-      FROM halls h
-      LEFT JOIN tables t ON h.hall_id = t.hall_id
-      GROUP BY h.hall_id, h.hall_name, h.hall_country, h.hall_capacity
-      ORDER BY h.hall_name
+        u.username,
+        u.name,
+        u.surname,
+        a.experience_level
+      FROM users u
+      JOIN arbiters a ON u.username = a.username
+      WHERE u.user_type = 'ARBITER'
+      ORDER BY u.name, u.surname
     `);
 
     return NextResponse.json({
       success: true,
-      halls: halls
+      arbiters: arbiters
     });
 
   } catch (error: any) {
-    console.error('Get halls error:', error);
+    console.error('Get arbiters error:', error);
     return NextResponse.json(
       { 
         success: false, 
-        message: 'An error occurred while fetching halls' 
+        message: 'An error occurred while fetching arbiters' 
       },
       { status: 500 }
     );
